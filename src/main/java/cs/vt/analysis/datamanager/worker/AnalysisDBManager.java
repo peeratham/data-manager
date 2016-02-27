@@ -10,8 +10,8 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
 
 public class AnalysisDBManager {
-	static MongoDatabase db = null;
-	public MongoClient mongoClient = new MongoClient();
+	private MongoDatabase db = null;
+	private MongoClient mongoClient = new MongoClient();
 	public AnalysisDBManager(){
 		db = mongoClient.getDatabase("test");
 	}
