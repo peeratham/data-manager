@@ -1,6 +1,12 @@
 package cs.vt.analysis.datamanager.crawler;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.bson.Document;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 public class ProjectMetadata {
 
@@ -88,6 +94,18 @@ public class ProjectMetadata {
 		return creator;
 	}
 
-
+	public Document toDocument(){
+		Document doc = new Document();
+		doc.append("_id", projectID);
+		doc.append("creator", creator);
+		doc.append("title", title);
+		doc.append("favoriteCount", favoriteCount);
+		doc.append("loveCount", loveCount);
+		doc.append("views", views);
+		doc.append("remixes", remixes);
+		doc.append("dateShared",dateShared);
+		doc.append("modifiedDate", modifiedDate);
+		return doc;
+	}
 
 }
