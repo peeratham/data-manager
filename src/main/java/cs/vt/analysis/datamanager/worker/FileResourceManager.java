@@ -33,6 +33,9 @@ public class FileResourceManager {
 		FileUtils.writeStringToFile(path, string);
 	}
 	
+	public void cleanDirectory() throws IOException{
+		FileUtils.cleanDirectory(datasetDirectory);
+	}
 	
 
 }

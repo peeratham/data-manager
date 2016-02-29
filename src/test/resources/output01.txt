@@ -1,0 +1,1 @@
+97552510	{"analyses":[{"records":[],"name":"Unreachable Code"},{"records":[],"name":"Too Long Script"},{"records":["[broadcasted?]@Sprite2\/Script@x104 y80[whenGreenFlag]\/doForever"],"name":"BroadCastWorkaround"},{"records":["Sprite2","Sprite1"],"name":"Uncommunicative Naming"},{"records":[],"name":"Too Broad Variable Scope"}],"_id":97552510}

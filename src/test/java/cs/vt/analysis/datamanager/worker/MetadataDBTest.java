@@ -10,7 +10,7 @@ import org.junit.Test;
 import cs.vt.analysis.datamanager.crawler.Crawler;
 import cs.vt.analysis.datamanager.crawler.ProjectMetadata;
 
-public class AnalysisDBManagerTest {
+public class MetadataDBTest {
 
 	private AnalysisDBManager manager;
 
