@@ -25,9 +25,7 @@ public class AnalysisResultReader {
 		}
 
 		public Document extractDocument(String inputLine) {
-			int id = Integer.parseInt(inputLine.split("\t")[0]);
-			String json = inputLine.split("\t")[1];
-			Document doc = Document.parse(json);
+			Document doc = Document.parse(inputLine);
 			return doc;
 			
 		}

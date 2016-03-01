@@ -44,5 +44,11 @@
 			<artifactId>json-simple</artifactId>
 			<version>1.1</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>cs.vt.analysis</groupId>
+			<artifactId>analyzer</artifactId>
+			<version>1.0</version>
+		</dependency>
 	</dependencies>
 </project>

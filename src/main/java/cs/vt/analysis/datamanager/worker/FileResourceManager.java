@@ -8,6 +8,7 @@ import org.apache.commons.io.FileUtils;
 public class FileResourceManager {
 
 	private File datasetDirectory;
+	private File analysisResultDir;
 
 	public void setDatasetDirectory(String path) throws Exception {
 		File f = new File(path);
@@ -33,8 +34,24 @@ public class FileResourceManager {
 		FileUtils.writeStringToFile(path, string);
 	}
 	
-	public void cleanDirectory() throws IOException{
+	public void cleanDatasetDirectory() throws IOException{
 		FileUtils.cleanDirectory(datasetDirectory);
+	}
+
+	public void cleanAnalysisResultDir() throws IOException {
+		FileUtils.cleanDirectory(analysisResultDir);
+		
+	}
+
+	public void setAnalysisResultDir(String analysisOutputDir) throws Exception {
+		File f = new File(analysisOutputDir);
+		if(f.isDirectory()){
+			analysisResultDir = new File(analysisOutputDir);
+			
+		}else{
+			throw new Exception("The givien path is not a directory");
+		}
+		
 	}
 	
 

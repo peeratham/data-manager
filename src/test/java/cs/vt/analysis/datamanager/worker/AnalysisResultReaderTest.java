@@ -31,14 +31,13 @@ public class AnalysisResultReaderTest {
 	public void ReaderListFilesInDirectory() throws Exception {
 		
 		reader.setDatasetDirectory("C:\\Users\\Peeratham\\workspace\\analysis-output");
-		System.out.println(Arrays.asList(reader.getFiles()));
 		assertNotNull(reader.getFiles());
 	}
 	
 	@Test
 	public void readAnalysisFile() throws IOException{
 		InputStream in = Main.class.getClassLoader()
-				.getResource("output01.txt").openStream();
+				.getResource("88190066-m-1").openStream();
 		String inputString = IOUtils.toString(in);
 		in.close();
 		Document doc = reader.extractDocument(inputString);
