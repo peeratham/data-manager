@@ -15,6 +15,8 @@ import org.bson.Document;
 import org.json.simple.JSONObject;
 
 import cs.vt.analysis.analyzer.BlockAnalyzer;
+import cs.vt.analysis.analyzer.analysis.AnalysisException;
+import cs.vt.analysis.analyzer.parser.ParsingException;
 import cs.vt.analysis.datamanager.crawler.Crawler;
 import cs.vt.analysis.datamanager.crawler.ProjectMetadata;
 import cs.vt.analysis.datamanager.worker.AnalysisDBManager;
@@ -90,6 +92,10 @@ public class Main {
 					File path = new File(resourceManager.getAnalysisResultDir().getAbsolutePath(), projectID + "-m-1");
 					FileUtils.writeStringToFile(path, result.toJSONString());
 				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (ParsingException e) {
+					e.printStackTrace();
+				} catch (AnalysisException e) {
 					e.printStackTrace();
 				}
 			}
