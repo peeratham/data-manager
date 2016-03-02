@@ -27,7 +27,7 @@ public class AnalysisDBManager {
 	}
 	
 	public void insertMetadata(Document doc) {
-		int projectID = (int) doc.get("_id");
+		int projectID = (Integer) doc.get("_id");
 		if(findMetadata(projectID) == null){
 			db.getCollection(METADATA).insertOne(doc);
 		}else{
