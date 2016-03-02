@@ -2,7 +2,7 @@ package cs.vt.analysis.datamanager.crawler;
 
 
 public class RetryOnException {
-	public static final int DEFAULT_RETRIES = 3;
+	public static final int DEFAULT_RETRIES = 6;
 	public static final long DEFAULT_WAIT_TIME_IN_MILLI = 2000;
 
 	private int numberOfRetries;
@@ -39,11 +39,13 @@ public class RetryOnException {
 	}
 
 	public long getTimeToWait() {
-		return timeToWait;
+		 long timeToReallyWait= timeToWait*(numberOfRetries-numberOfTriesLeft);
+		return timeToReallyWait;
 	}
 
 	private void waitUntilNextTry() {
 		try {
+			System.err.println("Waiting for "+getTimeToWait()+" ms");
 			Thread.sleep(getTimeToWait());
 		} catch (InterruptedException ignored) {
 		}

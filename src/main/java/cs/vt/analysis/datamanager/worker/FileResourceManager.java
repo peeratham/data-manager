@@ -10,6 +10,10 @@ public class FileResourceManager {
 	private File datasetDirectory;
 	private File analysisResultDir;
 
+	public File getAnalysisResultDir() {
+		return analysisResultDir;
+	}
+
 	public void setDatasetDirectory(String path) throws Exception {
 		File f = new File(path);
 		if(f.isDirectory()){
@@ -53,6 +57,8 @@ public class FileResourceManager {
 		}
 		
 	}
+	
+	
 	
 
 }

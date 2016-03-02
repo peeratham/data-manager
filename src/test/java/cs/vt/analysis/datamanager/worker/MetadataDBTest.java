@@ -38,7 +38,7 @@ public class MetadataDBTest {
 		
 		Document doc = metadata.toDocument();
 		manager.insertMetadata(doc);
-		Document result = manager.findProject(projectID);
+		Document result = manager.findMetadata(projectID);
 		assertTrue(result.containsValue(projectID));
 		assertEquals(1,manager.removeMetadata(projectID));
 	}
@@ -48,5 +48,23 @@ public class MetadataDBTest {
 		manager.clearMetadata();
 		assertEquals(0,manager.getMetadataSize());
 	}
+	
+	@Test
+	public void returnNullIfNotFound(){
+		assertNull(manager.findMetadata(0));
+	}
 
+	@Test
+	public void updateIfMetadataExists() throws Exception{
+		int projectID = 98908690;
+		ProjectMetadata metadata = new ProjectMetadata(projectID);
+		Crawler crawler = new Crawler();
+		crawler.retrieveProjectMetadata(metadata);
+		
+		Document doc = metadata.toDocument();
+	
+		manager.insertMetadata(doc);
+		manager.insertMetadata(doc);
+		
+	}
 }

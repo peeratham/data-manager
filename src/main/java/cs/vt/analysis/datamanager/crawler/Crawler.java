@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -14,14 +15,16 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import cs.vt.analysis.datamanager.main.Main;
+
 
 
 public class Crawler {
 
-	public static final String baseURL = "https://scratch.mit.edu/site-api/explore/more/projects/all/%1$d/?order_by=view_count";
+	public static final String baseURL = "https://scratch.mit.edu/site-api/explore/more/projects/all/%1$d";
 	public static final String baseDownLoadURL = "http://projects.scratch.mit.edu/internalapi/project/%1$d/get/";
 	private static final String pageURL = "https://scratch.mit.edu/projects/%1$d";
-	
+	static Logger logger = Logger.getLogger(Crawler.class);
 	
 	private int numProjectToCollect;
 	private JSONParser parser = new JSONParser();
@@ -31,13 +34,13 @@ public class Crawler {
 		numProjectToCollect = num;
 	}
 
-	public List<ProjectMetadata> getProjects() {
+	public List<ProjectMetadata> getProjectsFromQuery() {
 		ArrayList<ProjectMetadata> result = new ArrayList<ProjectMetadata>();
 		RetryOnException retry = new RetryOnException();
-		int listingIndex = 1;
+		int listingIndex = 16;
 		
 		while(result.size() < numProjectToCollect) {
-			
+			logger.info("crawling @ listingIndex:"+listingIndex);
 			String URL = String.format(baseURL,listingIndex);
 
 			while(retry.shouldRetry()){
@@ -61,8 +64,12 @@ public class Crawler {
 					try{
 						retry.errorOccured();
 					}catch(Exception failAttemptException){
-						throw new RuntimeException("Exception while calling URL:"
-								+ URL, failAttemptException);
+						logger.error("End crawling for listing @ "+listingIndex);
+						logger.error("Exception while calling URL:"+ URL);
+						
+						return result;
+						
+						
 					}
 				}
 			}

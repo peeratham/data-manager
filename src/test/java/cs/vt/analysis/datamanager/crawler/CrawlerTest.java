@@ -32,7 +32,7 @@ public class CrawlerTest {
 		int numOfProjects = 100;
 		crawler.setNumberOfProjectToCollect(numOfProjects);
 		assertEquals(crawler.getNumberOfProjectToCollect(), numOfProjects);
-		List<ProjectMetadata> projectMetadataListing = crawler.getProjects();
+		List<ProjectMetadata> projectMetadataListing = crawler.getProjectsFromQuery();
 		assertEquals(projectMetadataListing.size(), numOfProjects);
 		for (int i = 0; i < numOfProjects; i++) {	
 			assertNotEquals(projectMetadataListing.get(i).getTitle(),"");
@@ -61,6 +61,12 @@ public class CrawlerTest {
 		int projectID = 43026762;
 		String src = crawler.retrieveProjectSourceFromProjectID(projectID);
 		assertNotNull(src);
+	}
+	
+	
+	@Test
+	public void testProjectExists(){
+		
 	}
 	
 	
