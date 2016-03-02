@@ -45,7 +45,7 @@ public class RetryOnException {
 
 	private void waitUntilNextTry() {
 		try {
-			System.err.println("Waiting for "+getTimeToWait()+" ms");
+//			System.err.println("Waiting for "+getTimeToWait()+" ms");
 			Thread.sleep(getTimeToWait());
 		} catch (InterruptedException ignored) {
 		}

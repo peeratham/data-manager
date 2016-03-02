@@ -1,8 +1,6 @@
 package cs.vt.analysis.datamanager.crawler;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -66,10 +64,14 @@ public class CrawlerTest {
 	
 	@Test
 	public void testProjectExists(){
+		int projectID1 = 1;
+		assertFalse(crawler.checkIfExists(projectID1));
 		
+		int projectID2 = 99719111;
+		assertTrue(crawler.checkIfExists(projectID2));
+		
+		for(int i = 100000; i<99919111; i+=10){
+			crawler.checkIfExists(i);
+		}
 	}
-	
-	
-
-
 }
