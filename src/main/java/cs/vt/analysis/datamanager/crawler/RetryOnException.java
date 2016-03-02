@@ -2,7 +2,7 @@ package cs.vt.analysis.datamanager.crawler;
 
 
 public class RetryOnException {
-	public static final int DEFAULT_RETRIES = 6;
+	public static final int DEFAULT_RETRIES = 20;
 	public static final long DEFAULT_WAIT_TIME_IN_MILLI = 2000;
 
 	private int numberOfRetries;

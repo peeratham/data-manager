@@ -3,20 +3,23 @@ package cs.vt.analysis.datamanager.main;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.bson.Document;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.jsoup.Jsoup;
 
 import cs.vt.analysis.analyzer.BlockAnalyzer;
-
 import cs.vt.analysis.analyzer.analysis.AnalysisException;
 import cs.vt.analysis.analyzer.parser.ParsingException;
 import cs.vt.analysis.datamanager.crawler.Crawler;
 import cs.vt.analysis.datamanager.crawler.ProjectMetadata;
+import cs.vt.analysis.datamanager.crawler.RetryOnException;
 import cs.vt.analysis.datamanager.worker.AnalysisDBManager;
 import cs.vt.analysis.datamanager.worker.AnalysisResultReader;
 import cs.vt.analysis.datamanager.worker.FileResourceManager;
@@ -58,9 +61,9 @@ public class Main {
 			e.printStackTrace();
 		}
 
-		List<ProjectMetadata> projectMetadataListing = crawler
-				.getProjectsFromQuery();
-		for (int i = 0; i < numOfProjects; i++) {
+		List<ProjectMetadata> projectMetadataListing = crawler.getProjectsFromQuery();
+		
+		for (int i = 0; i < projectMetadataListing.size(); i++) {
 			ProjectMetadata current = projectMetadataListing.get(i);
 			try {
 				crawler.retrieveProjectMetadata(current);

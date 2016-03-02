@@ -9,7 +9,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 public class ProjectMetadata {
-
 	private int projectID;
 	private String title = "";
 	private String creator = "";

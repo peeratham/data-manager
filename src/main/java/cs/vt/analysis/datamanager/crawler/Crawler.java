@@ -37,7 +37,7 @@ public class Crawler {
 	public List<ProjectMetadata> getProjectsFromQuery() {
 		ArrayList<ProjectMetadata> result = new ArrayList<ProjectMetadata>();
 		RetryOnException retry = new RetryOnException();
-		int listingIndex = 16;
+		int listingIndex = 1;
 		
 		while(result.size() < numProjectToCollect) {
 			logger.info("crawling @ listingIndex:"+listingIndex);
