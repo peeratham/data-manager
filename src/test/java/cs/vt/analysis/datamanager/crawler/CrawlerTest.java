@@ -27,7 +27,7 @@ public class CrawlerTest {
 	
 	@Test
 	public void testCrawlingToCollectInitialMetaInfoProjectIDAndTitle() throws Exception {
-		int numOfProjects = 100;
+		int numOfProjects = 5;
 		crawler.setNumberOfProjectToCollect(numOfProjects);
 		assertEquals(crawler.getNumberOfProjectToCollect(), numOfProjects);
 		List<ProjectMetadata> projectMetadataListing = crawler.getProjectsFromQuery();
@@ -61,17 +61,5 @@ public class CrawlerTest {
 		assertNotNull(src);
 	}
 	
-	
-	@Test
-	public void testProjectExists(){
-		int projectID1 = 1;
-		assertFalse(crawler.checkIfExists(projectID1));
-		
-		int projectID2 = 99719111;
-		assertTrue(crawler.checkIfExists(projectID2));
-		
-		for(int i = 100000; i<99919111; i+=10){
-			crawler.checkIfExists(i);
-		}
-	}
+
 }

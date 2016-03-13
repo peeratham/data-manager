@@ -24,9 +24,9 @@ import cs.vt.analysis.datamanager.worker.AnalysisResultReader;
 import cs.vt.analysis.datamanager.worker.FileResourceManager;
 
 public class Main {
-	static int numOfProjects = 10;
+	static int numOfProjects = 100;
 	public static final boolean TEST = true;
-	public static final boolean ENABLE_LOCAL_ANALYSIS = false;
+	public static final boolean ENABLE_LOCAL_ANALYSIS = true;
 
 	private static String BASE_DATA_DIR = "";
 	private static String DATASET_DIR = "";
