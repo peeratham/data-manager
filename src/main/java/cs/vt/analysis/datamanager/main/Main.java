@@ -14,7 +14,7 @@ import org.apache.log4j.PropertyConfigurator;
 import org.bson.Document;
 import org.json.simple.JSONObject;
 
-import cs.vt.analysis.analyzer.BlockAnalyzer;
+import cs.vt.analysis.analyzer.AnalysisManager;
 import cs.vt.analysis.analyzer.analysis.AnalysisException;
 import cs.vt.analysis.analyzer.parser.ParsingException;
 import cs.vt.analysis.datamanager.crawler.Crawler;
@@ -27,6 +27,7 @@ public class Main {
 	static int numOfProjects = 100;
 	public static final boolean TEST = true;
 	public static final boolean ENABLE_LOCAL_ANALYSIS = true;
+	public static final boolean RERUN_ANALYSIS_ONLY = true;
 
 	private static String BASE_DATA_DIR = "";
 	private static String DATASET_DIR = "";
@@ -50,8 +51,10 @@ public class Main {
 			if (TEST) {
 				resourceManager.setDatasetDirectory(TEST_DATASET_DIR);
 				resourceManager.setAnalysisResultDir(TEST_ANALYSIS_OUTPUT_DIR);
-				cleanDataSet();
 				cleanAnalysisResult();
+				if(!RERUN_ANALYSIS_ONLY){
+					cleanDataSet();
+				}
 			} else {
 				resourceManager.setDatasetDirectory(DATASET_DIR);
 				resourceManager.setAnalysisResultDir(ANALYSIS_OUTPUT_DIR);
@@ -61,28 +64,31 @@ public class Main {
 			e.printStackTrace();
 		}
 
-		List<ProjectMetadata> projectMetadataListing = crawler.getProjectsFromQuery();
 
-		for (int i = 0; i < projectMetadataListing.size(); i++) {
-			ProjectMetadata current = projectMetadataListing.get(i);
-			try {
-				crawler.retrieveProjectMetadata(current);
-				String src = crawler.retrieveProjectSourceFromProjectID(current.getProjectID());
-				resourceManager.write(current.getProjectID() + ".json", src);
-				manager.insertMetadata(current.toDocument());
-				logger.info(i + "/" + numOfProjects + " processed: project _id:" + current.getProjectID());
+		if(!RERUN_ANALYSIS_ONLY){
+			List<ProjectMetadata> projectMetadataListing = crawler.getProjectsFromQuery();
 
-			} catch (ParseException | IOException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
+			for (int i = 0; i < projectMetadataListing.size(); i++) {
+				ProjectMetadata current = projectMetadataListing.get(i);
+				try {
+					crawler.retrieveProjectMetadata(current);
+					String src = crawler.retrieveProjectSourceFromProjectID(current.getProjectID());
+					resourceManager.write(current.getProjectID() + ".json", src);
+					manager.insertMetadata(current.toDocument());
+					logger.info(i + "/" + numOfProjects + " processed: project _id:" + current.getProjectID());
+
+				} catch (ParseException | IOException e) {
+					e.printStackTrace();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
-
 		}
+		
 
 		// analyze data in DATASET_DIR and write result to ANALYSIS_OUTPUT_DIR
 		if (ENABLE_LOCAL_ANALYSIS) {
-			BlockAnalyzer blockAnalyzer = new BlockAnalyzer();
+			AnalysisManager blockAnalyzer = new AnalysisManager();
 
 			for (File f : resourceManager.getDatasetDirectory().listFiles()) {
 				try {
