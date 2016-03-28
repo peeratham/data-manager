@@ -14,10 +14,12 @@ import org.apache.log4j.PropertyConfigurator;
 import org.bson.Document;
 import org.json.simple.JSONObject;
 
+
 import cs.vt.analysis.analyzer.AnalysisManager;
 import cs.vt.analysis.analyzer.analysis.AnalysisException;
 import cs.vt.analysis.analyzer.parser.ParsingException;
 import cs.vt.analysis.datamanager.crawler.Crawler;
+import cs.vt.analysis.datamanager.crawler.Creator;
 import cs.vt.analysis.datamanager.crawler.ProjectMetadata;
 import cs.vt.analysis.datamanager.worker.AnalysisDBManager;
 import cs.vt.analysis.datamanager.worker.AnalysisResultReader;
@@ -75,7 +77,7 @@ public class Main {
 					String src = crawler.retrieveProjectSourceFromProjectID(current.getProjectID());
 					resourceManager.write(current.getProjectID() + ".json", src);
 					manager.insertMetadata(current.toDocument());
-					logger.info(i + "/" + numOfProjects + " processed: project _id:" + current.getProjectID());
+					logger.info(i + "/" + numOfProjects + " analyzed: project _id:" + current.getProjectID());
 
 				} catch (ParseException | IOException e) {
 					e.printStackTrace();
@@ -110,9 +112,21 @@ public class Main {
 			AnalysisResultReader reader = new AnalysisResultReader();
 			for (File f : resourceManager.getAnalysisResultDir().listFiles()) {
 				try {
-					Document report = reader.extractDocument(FileUtils.readFileToString(f));
+					reader.process(FileUtils.readFileToString(f));
+					Document report = reader.getFullReportAsDoc();
 					manager.insertAnalysisReport(report);
+					int projectID = (int) report.get("_id");
+				
+					Document masteryReport = reader.getDoc("Mastery Level");
+					Creator creator = new Creator(manager.lookUpCreator(projectID));
+						creator.addProjectID(projectID);
+						creator.setMasteryReport(masteryReport);
+					manager.updateCreatorRecord(creator.toDocument());
+					
 				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (org.json.simple.parser.ParseException e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 

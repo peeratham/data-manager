@@ -42,7 +42,7 @@ public class AnalysisDBTest {
 		in.close();
 		
 		manager.clearAnalysisReport();
-		Document report = reader.extractDocument(inputString);
+		Document report = reader.getFullReportAsDoc();
 		manager.insertAnalysisReport(report);
 		Document result = manager.findAnalysisReport(88190066);
 		assertTrue(result.containsValue(88190066));
