@@ -66,6 +66,7 @@ public class ProjectMetadata {
 
 	private Date modifiedDate = null;
 	private Date dateShared = null;
+	private int originalProjectID;
 
 
 	public void setCreator(String creator) {
@@ -104,7 +105,17 @@ public class ProjectMetadata {
 		doc.append("remixes", remixes);
 		doc.append("dateShared",dateShared);
 		doc.append("modifiedDate", modifiedDate);
+		doc.append("original", originalProjectID);
 		return doc;
+	}
+
+	public int getOriginal() {
+		return this.originalProjectID;
+	}
+
+	public void setOriginalProject(int origin) {
+		this.originalProjectID = origin;
+		
 	}
 
 }

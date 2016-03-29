@@ -17,6 +17,7 @@ import org.jsoup.Connection.Response;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import cs.vt.analysis.datamanager.main.Main;
@@ -149,8 +150,29 @@ public class Crawler {
 				dateSharedStr.length()).trim();
 		Date dateShared = formatter.parse(dateSharedStr);
 		metadata.setDateShared(dateShared);
+		
+		
+		//get original
+		//if project itself is original ;set itself original
+		Element originalProjectLink= doc.select("#remix-history ul li div span a").first();
+		if(originalProjectLink!=null){
+			String originalProjectID = originalProjectLink.attr("href");
+			int origin = extractOriginalProjectIDFromURLString(originalProjectID);
+			metadata.setOriginalProject(origin);
+		}else{
+			metadata.setOriginalProject(metadata.getProjectID());
+		}
+		
+		
 
 		return metadata;
+	}
+
+	private int extractOriginalProjectIDFromURLString(String originalProjectID) {
+		int secondSlash = originalProjectID.indexOf('/', 1);
+		int lastSlash = originalProjectID.indexOf('/', secondSlash+1);
+		String projectID = originalProjectID.substring(secondSlash+1, lastSlash);
+		return Integer.parseInt(projectID);
 	}
 
 	private static String extractValueFromHTMLScript(Elements scriptElements,

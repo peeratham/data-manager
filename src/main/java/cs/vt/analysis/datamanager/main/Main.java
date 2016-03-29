@@ -29,7 +29,7 @@ public class Main {
 	static int numOfProjects = 100;
 	public static final boolean TEST = true;
 	public static final boolean ENABLE_LOCAL_ANALYSIS = true;
-	public static final boolean RERUN_ANALYSIS_ONLY = true;
+	public static final boolean RERUN_ANALYSIS_ONLY = false;
 
 	private static String BASE_DATA_DIR = "";
 	private static String DATASET_DIR = "";
@@ -77,7 +77,7 @@ public class Main {
 					String src = crawler.retrieveProjectSourceFromProjectID(current.getProjectID());
 					resourceManager.write(current.getProjectID() + ".json", src);
 					manager.insertMetadata(current.toDocument());
-					logger.info(i + "/" + numOfProjects + " analyzed: project _id:" + current.getProjectID());
+					logger.info(i + "/" + numOfProjects + " saved metadata for project _id:" + current.getProjectID());
 
 				} catch (ParseException | IOException e) {
 					e.printStackTrace();
@@ -93,17 +93,22 @@ public class Main {
 			AnalysisManager blockAnalyzer = new AnalysisManager();
 
 			for (File f : resourceManager.getDatasetDirectory().listFiles()) {
+				int projectID = 0;
 				try {
 					JSONObject result = blockAnalyzer.analyze(FileUtils.readFileToString(f));
-					int projectID = blockAnalyzer.getProjectID();
+					projectID = blockAnalyzer.getProjectID();
 
 					File path = new File(resourceManager.getAnalysisResultDir().getAbsolutePath(), projectID + "-m-1");
 					FileUtils.writeStringToFile(path, result.toJSONString());
+					logger.info("analyzed project _id:" + projectID);
 				} catch (IOException e) {
+					System.err.println("error reading/writing: "+projectID);
 					e.printStackTrace();
 				} catch (ParsingException e) {
+					System.err.println("error JSON parsing: "+projectID);
 					e.printStackTrace();
 				} catch (AnalysisException e) {
+					System.err.println("error analyzing: "+projectID);
 					e.printStackTrace();
 				}
 			}
@@ -117,11 +122,16 @@ public class Main {
 					manager.insertAnalysisReport(report);
 					int projectID = (int) report.get("_id");
 				
-					Document masteryReport = reader.getDoc("Mastery Level");
-					Creator creator = new Creator(manager.lookUpCreator(projectID));
-						creator.addProjectID(projectID);
-						creator.setMasteryReport(masteryReport);
-					manager.updateCreatorRecord(creator.toDocument());
+					try{
+						Document masteryReport = reader.getDoc("Mastery Level");
+						Creator creator = new Creator(manager.lookUpCreator(projectID));
+							creator.addProjectID(projectID);
+							creator.setMasteryReport(masteryReport);
+						manager.updateCreatorRecord(creator.toDocument());
+					}catch(Exception e){
+						logger.error("Error@MasteryReport: "+projectID);
+						e.printStackTrace();
+					}
 					
 				} catch (IOException e) {
 					e.printStackTrace();

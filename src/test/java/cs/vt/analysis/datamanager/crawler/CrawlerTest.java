@@ -61,5 +61,18 @@ public class CrawlerTest {
 		assertNotNull(src);
 	}
 	
+	@Test
+	public void testGetOriginalProject() throws Exception{
+		int remixProjectID = 100189358;
+		int originalProjectID = 99670195;
+		ProjectMetadata metadata = new ProjectMetadata(remixProjectID);
+		crawler.retrieveProjectMetadata(metadata);
+		assertEquals(originalProjectID, metadata.getOriginal());
+		
+		ProjectMetadata metadata1 = new ProjectMetadata(originalProjectID);
+		crawler.retrieveProjectMetadata(metadata1);
+		assertEquals(originalProjectID, metadata1.getOriginal());
+		
+	}
 
 }
