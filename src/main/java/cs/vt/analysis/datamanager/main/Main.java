@@ -15,6 +15,8 @@ import org.bson.Document;
 import org.json.simple.JSONObject;
 
 
+import org.json.simple.parser.JSONParser;
+
 import cs.vt.analysis.analyzer.AnalysisManager;
 import cs.vt.analysis.analyzer.analysis.AnalysisException;
 import cs.vt.analysis.analyzer.parser.ParsingException;
@@ -26,7 +28,7 @@ import cs.vt.analysis.datamanager.worker.AnalysisResultReader;
 import cs.vt.analysis.datamanager.worker.FileResourceManager;
 
 public class Main {
-	static int numOfProjects = 100;
+	static int numOfProjects = 500;
 	public static final boolean TEST = true;
 	public static final boolean ENABLE_LOCAL_ANALYSIS = true;
 	public static final boolean RERUN_ANALYSIS_ONLY = false;
@@ -69,13 +71,14 @@ public class Main {
 
 		if(!RERUN_ANALYSIS_ONLY){
 			List<ProjectMetadata> projectMetadataListing = crawler.getProjectsFromQuery();
-
+			JSONParser parser = new JSONParser();
 			for (int i = 0; i < projectMetadataListing.size(); i++) {
 				ProjectMetadata current = projectMetadataListing.get(i);
 				try {
 					crawler.retrieveProjectMetadata(current);
 					String src = crawler.retrieveProjectSourceFromProjectID(current.getProjectID());
-					resourceManager.write(current.getProjectID() + ".json", src);
+					String singleLineJSONSrc = ((JSONObject) parser.parse(src)).toJSONString();
+					resourceManager.write(current.getProjectID() + ".json", singleLineJSONSrc);
 					manager.insertMetadata(current.toDocument());
 					logger.info(i + "/" + numOfProjects + " saved metadata for project _id:" + current.getProjectID());
 
