@@ -28,13 +28,6 @@ public class AnalysisResultReaderTest {
 	@After
 	public void tearDown() throws Exception {
 	}
-
-	@Test
-	public void ReaderListFilesInDirectory() throws Exception {
-		
-		reader.setDatasetDirectory("C:\\Users\\Peeratham\\workspace\\analysis-output");
-		assertNotNull(reader.getFiles());
-	}
 	
 	@Test
 	public void readAnalysisFile() throws IOException, ParseException{
