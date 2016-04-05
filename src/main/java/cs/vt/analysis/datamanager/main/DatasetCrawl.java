@@ -29,7 +29,7 @@ public class DatasetCrawl {
 	private static String configurationFilePath = "";
 	private static String outputDirectory = "";
 	private static String databaseName = "";
-	private static AnalysisDBManager manager;
+	private static AnalysisDBManager DBManager;
 	private static FileResourceManager resourceManager;
 	static Logger logger = Logger.getLogger(Main.class);
 
@@ -54,7 +54,7 @@ public class DatasetCrawl {
 			
 			Crawler crawler = new Crawler();
 			crawler.setNumberOfProjectToCollect(numOfProjects);
-			manager = new AnalysisDBManager(databaseName);
+			DBManager = new AnalysisDBManager(databaseName);
 			resourceManager = new FileResourceManager();
 			resourceManager.setDatasetDirectory(outputDirectory);
 			
@@ -65,12 +65,15 @@ public class DatasetCrawl {
 			for (int i = 0; i < projectMetadataListing.size(); i++) {
 				ProjectMetadata current = projectMetadataListing.get(i);
 				logger.info("Processing:"+current.getProjectID());
+				if(DBManager.findMetadata(current.getProjectID()) != null){
+					continue;
+				}
 				try {
 					crawler.retrieveProjectMetadata(current);
 					String src = crawler.retrieveProjectSourceFromProjectID(current.getProjectID());
 					String singleLineJSONSrc = ((JSONObject) parser.parse(src)).toJSONString();
 					resourceManager.write(current.getProjectID() + ".json", singleLineJSONSrc);
-					manager.insertMetadata(current.toDocument());
+					DBManager.insertMetadata(current.toDocument());
 					downloadedProjects++;
 					double percentCompleteion = ((double)downloadedProjects/(double)numOfProjects)*100;
 					logger.info(percentCompleteion+"%  "+i + "/" + numOfProjects + " saved metadata for project" + current.getProjectID());

@@ -95,7 +95,7 @@ public class Main {
 		if (ENABLE_LOCAL_ANALYSIS) {
 			AnalysisManager blockAnalyzer = new AnalysisManager();
 
-			for (File f : resourceManager.getDatasetDirectory().listFiles()) {
+			for (File f : resourceManager.getBaseDatasetDirectory().listFiles()) {
 				int projectID = 0;
 				try {
 					JSONObject result = blockAnalyzer.analyze(FileUtils.readFileToString(f));
