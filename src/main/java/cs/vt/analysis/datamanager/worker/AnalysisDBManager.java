@@ -33,6 +33,11 @@ public class AnalysisDBManager {
 		
 	}
 	
+	public AnalysisDBManager(String DBName){
+		db = mongoClient.getDatabase(DBName);
+		db.getCollection(CREATOR).createIndex(new Document("creator", "text"));
+	}
+	
 	public void insertMetadata(Document doc) {
 		int projectID = (Integer) doc.get("_id");
 		if(findMetadata(projectID) == null){
