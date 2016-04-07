@@ -25,8 +25,8 @@ import cs.vt.analysis.datamanager.worker.FileResourceManager;
 
 public class DatasetCrawl {
 	
-	private static int numOfProjects=10;
-	private static String configurationFilePath = "";
+	private static int numOfProjects=0;
+	public static String configurationFilePath = "";
 	private static String outputDirectory = "";
 	private static String databaseName = "";
 	private static AnalysisDBManager DBManager;
