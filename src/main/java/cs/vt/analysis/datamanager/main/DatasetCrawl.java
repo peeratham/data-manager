@@ -40,7 +40,7 @@ public class DatasetCrawl {
 		try {
 			final CommandLine line = getCommandLine(options, args);
 			numOfProjects = Integer.parseInt(line.getOptionValue("n"));
-			configurationFilePath = line.getOptionValue("cp");
+			configurationFilePath = line.getOptionValue("cf");
 			Properties prop = new Properties();
 			InputStream inputStream = new FileInputStream(configurationFilePath);
 			try {
@@ -49,9 +49,8 @@ public class DatasetCrawl {
 				e.printStackTrace();
 			}
 			
-			outputDirectory = prop.getProperty("OUTPUT_DIR");
+			outputDirectory = prop.getProperty("OUTPUT_DIR")
 			databaseName = prop.getProperty("DB_NAME");
-			
 			Crawler crawler = new Crawler();
 			crawler.setNumberOfProjectToCollect(numOfProjects);
 			DBManager = new AnalysisDBManager(databaseName);
@@ -110,7 +109,7 @@ public class DatasetCrawl {
 	private static Options createOptions() {
 		final Options options = new Options();
 		options.addOption("n", true, "number of projects to download");
-		options.addOption("cp", true, "configuration file for crawler");
+		options.addOption("cf", true, "configuration file for crawler");
 		
 
 		return options;
