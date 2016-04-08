@@ -14,7 +14,7 @@ public class FileResourceManager {
 
 	private File baseDatasetDirectory;
 	private File analysisResultDir;
-	public static final int MAX_FILES_PER_DIRECTORY = 10;
+	public static final int MAX_FILES_PER_DIRECTORY = 50;
 	public static int currentPart = 0; 
 	public File currentDatasetDirectory;
 
@@ -31,7 +31,7 @@ public class FileResourceManager {
 			loadParams();
 			currentDatasetDirectory = new File(baseDatasetDirectory,"part-"+currentPart);
 		}else{
-			throw new Exception("The givien path is not a directory");
+			throw new Exception("The givien path "+currentDatasetDirectory+" is not a directory");
 		}
 		
 	}
@@ -42,7 +42,7 @@ public class FileResourceManager {
 	
 
 	public void write(String fileName, String string) throws IOException {
-		checkAndUpdateDirectory();	//check and update first
+	checkAndUpdateDirectory();	//check and update first
 		File path = new File(currentDatasetDirectory, fileName);
 		FileUtils.writeStringToFile(path, string);
 		
