@@ -7,7 +7,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public class AnalysisResultReader {
+public class AnalysisRecordReader {
 
 	private File analysisResultDirectory;
 	private JSONObject reports;
@@ -42,6 +42,16 @@ public class AnalysisResultReader {
 			Document reportDoc = Document.parse(reportJSON.toJSONString());
 			return reportDoc;
 		}
+
+		public JSONObject getReportAsJson() {
+			return reports;
+		}
+		
+		public Document getReportAsDocument(){
+			return fullReportDoc;
+		}
+		
+		
 		
 		
 		

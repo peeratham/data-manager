@@ -21,13 +21,13 @@ import cs.vt.analysis.datamanager.main.Main;
 public class AnalysisDBTest {
 
 	private AnalysisDBManager manager;
-	private AnalysisResultReader reader;
+	private AnalysisRecordReader reader;
 	
 
 	@Before
 	public void setUp() throws Exception {
 		manager = new AnalysisDBManager();
-		reader = new AnalysisResultReader();
+		reader = new AnalysisRecordReader();
 	}
 
 	@After

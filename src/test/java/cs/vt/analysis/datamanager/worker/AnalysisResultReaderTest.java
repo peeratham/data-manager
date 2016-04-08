@@ -1,57 +1,44 @@
 package cs.vt.analysis.datamanager.worker;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
-import java.io.IOException;
+import java.io.File;
 import java.io.InputStream;
-import java.util.Arrays;
+import java.util.ArrayList;
 
-import org.apache.commons.io.IOUtils;
 import org.bson.Document;
-import org.json.simple.parser.ParseException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import cs.vt.analysis.datamanager.main.AnalysisResultReader;
 import cs.vt.analysis.datamanager.main.Main;
 
 public class AnalysisResultReaderTest {
 
-	private static final String ANALYSIS_OUTPUT_FILENAME = "69004564-m-1";
-	private AnalysisResultReader reader;
+	private String dir;
+	private AnalysisDBManager manager;
 
 	@Before
 	public void setUp() throws Exception {
-		reader = new AnalysisResultReader();
+		dir = Main.class.getClassLoader().getResource("test-output").getPath();
+		manager = new AnalysisDBManager();
+		manager.setAnalysisDBManagerForTest(true);
 	}
 
 	@After
 	public void tearDown() throws Exception {
+		manager.clearAnalysisReport();
+		manager.clearCreatorRecords();
 	}
-	
+
 	@Test
-	public void readAnalysisFile() throws IOException, ParseException{
-		InputStream in = Main.class.getClassLoader()
-				.getResource(ANALYSIS_OUTPUT_FILENAME).openStream();
-		String inputString = IOUtils.toString(in);
-		in.close();
-		reader.process(inputString);
-		Document doc = reader.getFullReportAsDoc();
-		System.out.println(doc);
+	public void testSaveAnalysisRecords() throws Exception{
+		AnalysisResultReader reader = new AnalysisResultReader();
+		reader.setAnalysisResultDir(dir);
+		reader.processAnalysisResultFiles(manager);
+		assertEquals(10L,manager.getReportSize());
 	}
 	
-	@Test
-	public void testExtractMasteryReport() throws IOException, ParseException{
-		InputStream in = Main.class.getClassLoader()
-				.getResource(ANALYSIS_OUTPUT_FILENAME).openStream();
-		String inputString = IOUtils.toString(in);
-		in.close();
-		reader.process(inputString);
-		Document masteryReport = reader.getDoc("Mastery Level");
-		System.out.println(masteryReport.toJson());
-	}
-	
-	
-	
-	
+
 }

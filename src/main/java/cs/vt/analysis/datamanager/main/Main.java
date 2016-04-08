@@ -24,12 +24,12 @@ import cs.vt.analysis.datamanager.crawler.Crawler;
 import cs.vt.analysis.datamanager.crawler.Creator;
 import cs.vt.analysis.datamanager.crawler.ProjectMetadata;
 import cs.vt.analysis.datamanager.worker.AnalysisDBManager;
-import cs.vt.analysis.datamanager.worker.AnalysisResultReader;
+import cs.vt.analysis.datamanager.worker.AnalysisRecordReader;
 import cs.vt.analysis.datamanager.worker.FileResourceManager;
 
 public class Main {
 	static int numOfProjects = 500;
-	public static final boolean TEST = true;
+	public static final boolean TEST = false;
 	public static final boolean ENABLE_LOCAL_ANALYSIS = true;
 	public static final boolean RERUN_ANALYSIS_ONLY = false;
 
@@ -117,7 +117,7 @@ public class Main {
 			}
 
 			// read back and write to database
-			AnalysisResultReader reader = new AnalysisResultReader();
+			AnalysisRecordReader reader = new AnalysisRecordReader();
 			for (File f : resourceManager.getAnalysisResultDir().listFiles()) {
 				try {
 					reader.process(FileUtils.readFileToString(f));

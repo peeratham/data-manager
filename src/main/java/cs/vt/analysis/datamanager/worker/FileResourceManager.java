@@ -31,7 +31,7 @@ public class FileResourceManager {
 			loadParams();
 			currentDatasetDirectory = new File(baseDatasetDirectory,"part-"+currentPart);
 		}else{
-			throw new Exception("The givien path is not a directory");
+			throw new Exception("The givien path "+currentDatasetDirectory+" is not a directory");
 		}
 		
 	}
