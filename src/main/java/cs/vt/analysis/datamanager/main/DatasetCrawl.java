@@ -49,7 +49,7 @@ public class DatasetCrawl {
 				e.printStackTrace();
 			}
 			
-			outputDirectory = prop.getProperty("OUTPUT_DIR")
+			outputDirectory = prop.getProperty("OUTPUT_DIR");
 			databaseName = prop.getProperty("DB_NAME");
 			Crawler crawler = new Crawler();
 			crawler.setNumberOfProjectToCollect(numOfProjects);
@@ -72,7 +72,7 @@ public class DatasetCrawl {
 					String src = crawler.retrieveProjectSourceFromProjectID(current.getProjectID());
 					String singleLineJSONSrc = ((JSONObject) parser.parse(src)).toJSONString();
 					resourceManager.write(current.getProjectID() + ".json", singleLineJSONSrc);
-					DBManager.insertMetadata(current.toDocument());
+					DBManager.putMetadata(current.toDocument());
 					downloadedProjects++;
 					double percentCompleteion = ((double)downloadedProjects/(double)numOfProjects)*100;
 					logger.info(percentCompleteion+"%  "+i + "/" + numOfProjects + " saved metadata for project" + current.getProjectID());

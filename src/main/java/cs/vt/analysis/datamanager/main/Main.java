@@ -79,7 +79,7 @@ public class Main {
 					String src = crawler.retrieveProjectSourceFromProjectID(current.getProjectID());
 					String singleLineJSONSrc = ((JSONObject) parser.parse(src)).toJSONString();
 					resourceManager.write(current.getProjectID() + ".json", singleLineJSONSrc);
-					manager.insertMetadata(current.toDocument());
+					manager.putMetadata(current.toDocument());
 					logger.info(i + "/" + numOfProjects + " saved metadata for project _id:" + current.getProjectID());
 
 				} catch (ParseException | IOException e) {
@@ -122,15 +122,16 @@ public class Main {
 				try {
 					reader.process(FileUtils.readFileToString(f));
 					Document report = reader.getFullReportAsDoc();
-					manager.insertAnalysisReport(report);
 					int projectID = (int) report.get("_id");
+					manager.putAnalysisReport(projectID, report);
+					
 				
 					try{
 						Document masteryReport = reader.getDoc("Mastery Level");
 						Creator creator = new Creator(manager.lookUpCreator(projectID));
 							creator.addProjectID(projectID);
 							creator.setMasteryReport(masteryReport);
-						manager.updateCreatorRecord(creator.toDocument());
+						manager.putCreatorRecord(creator.toDocument());
 					}catch(Exception e){
 						logger.error("Error@MasteryReport: "+projectID);
 						e.printStackTrace();

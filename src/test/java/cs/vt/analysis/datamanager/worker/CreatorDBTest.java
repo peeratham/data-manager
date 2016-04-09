@@ -46,7 +46,7 @@ public class CreatorDBTest {
 		String masteryInput1 = "{ \"FlowControl\" : 2, \"abstraction\" : 1, \"DataRepresentation\" : 2, \"Synchronization\" : 2, \"Logic\" : 3, \"User Interactivity\" : 1, \"Parallelization\" : 1 }";
 		Document masteryReport1 = Document.parse(masteryInput1);
 		creator1.setMasteryReport(masteryReport1);
-		manager.updateCreatorRecord(creator1.toDocument());
+		manager.putCreatorRecord(creator1.toDocument());
 		
 		
 		Creator creator2 = new Creator(userName);
@@ -55,7 +55,7 @@ public class CreatorDBTest {
 		String masteryInput2 = "{ \"FlowControl\" : 3, \"abstraction\" : 0, \"DataRepresentation\" : 2, \"Synchronization\" : 3, \"Logic\" : 3, \"User Interactivity\" : 1, \"Parallelization\" : 1 }";
 		Document masteryReport2 = Document.parse(masteryInput2);
 		creator2.setMasteryReport(masteryReport2);
-		manager.updateCreatorRecord(creator2.toDocument());
+		manager.putCreatorRecord(creator2.toDocument());
 		manager.deleteCreator("userName");
 		
 	}

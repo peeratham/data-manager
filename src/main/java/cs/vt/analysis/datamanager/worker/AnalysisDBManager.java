@@ -41,7 +41,7 @@ public class AnalysisDBManager {
 		db.getCollection(CREATOR_COLLECTION_NAME).createIndex(new Document("creator", "text"));
 	}
 	
-	public void insertMetadata(Document doc) {
+	public void putMetadata(Document doc) {
 		int projectID = (Integer) doc.get("_id");
 		if(findMetadata(projectID) == null){
 			db.getCollection(METADATA_COLLECTION_NAME).insertOne(doc);
@@ -61,6 +61,15 @@ public class AnalysisDBManager {
 			
 	}
 	
+	public Document findReport(int projectID){
+		FindIterable<Document> iterable = db.getCollection(REPORT_COLLECTION_NAME).find(eq("_id", projectID));
+		if(iterable==null){
+			return null;
+		}else{
+			return iterable.first();
+		}
+	}
+	
 	public long removeMetadata(int projectID) {
 		DeleteResult result = db.getCollection(METADATA_COLLECTION_NAME).deleteOne(eq("_id", projectID));
 		return result.getDeletedCount();
@@ -73,8 +82,13 @@ public class AnalysisDBManager {
 	public long getMetadataSize(){
 		return db.getCollection(METADATA_COLLECTION_NAME).count();
 	}
-	public void insertAnalysisReport(Document report) {
-		db.getCollection(REPORT_COLLECTION_NAME).insertOne(report);
+	public void putAnalysisReport(int projectID, Document report) {
+		if(findReport(projectID) == null){
+			db.getCollection(REPORT_COLLECTION_NAME).insertOne(report);
+		}else{
+			db.getCollection(REPORT_COLLECTION_NAME).findOneAndReplace(eq("_id", projectID), report);
+		}
+		
 	}
 	
 	public void clearAnalysisReport() {
@@ -101,7 +115,7 @@ public class AnalysisDBManager {
 		db.getCollection(CREATOR_COLLECTION_NAME).insertOne(creatorDoc);
 	}
 	
-	public void updateCreatorRecord(Document creatorDoc){
+	public void putCreatorRecord(Document creatorDoc){
 		String creatorName = (String) creatorDoc.get("creator");
 		Document matchedRecord = findCreatorRecord(creatorName);
 		if(matchedRecord == null){

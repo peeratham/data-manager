@@ -46,7 +46,7 @@ public class AnalysisDBTest {
 		
 		manager.clearAnalysisReport();
 		Document report = reader.getFullReportAsDoc();
-		manager.insertAnalysisReport(report);
+		manager.putAnalysisReport(88190066, report);
 		Document result = manager.findAnalysisReport(88190066);
 		assertTrue(result.containsValue(88190066));
 		assertEquals(1,manager.removeAnalysisReport(88190066));

@@ -37,7 +37,7 @@ public class MetadataDBTest {
 		crawler.retrieveProjectMetadata(metadata);
 		
 		Document doc = metadata.toDocument();
-		manager.insertMetadata(doc);
+		manager.putMetadata(doc);
 		Document result = manager.findMetadata(projectID);
 		assertTrue(result.containsValue(projectID));
 		assertEquals(1,manager.removeMetadata(projectID));
@@ -63,8 +63,8 @@ public class MetadataDBTest {
 		
 		Document doc = metadata.toDocument();
 	
-		manager.insertMetadata(doc);
-		manager.insertMetadata(doc);
+		manager.putMetadata(doc);
+		manager.putMetadata(doc);
 		
 	}
 }

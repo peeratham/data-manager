@@ -86,7 +86,7 @@ public class AnalysisResultReader {
 			AnalysisRecordReader reader = new AnalysisRecordReader();
 			try {
 				reader.process(lineRecord[1]);
-				dbManager.insertAnalysisReport(reader.getReportAsDocument());
+				dbManager.putAnalysisReport(projectID, reader.getReportAsDocument());
 				Document masteryReport = reader.getDoc("Mastery Level");
 				String creatorName = dbManager.lookUpCreator(projectID);
 				if (creatorName == null) {
@@ -95,7 +95,7 @@ public class AnalysisResultReader {
 				Creator creator = new Creator(creatorName);
 				creator.addProjectID(projectID);
 				creator.setMasteryReport(masteryReport);
-				dbManager.updateCreatorRecord(creator.toDocument());
+				dbManager.putCreatorRecord(creator.toDocument());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
