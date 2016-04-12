@@ -37,9 +37,14 @@ public class AnalysisRecordReader {
 		}
 		
 
-		public Document getDoc(String key) {
+		public Document getDoc(String key) throws Exception {
 			JSONObject reportJSON = (JSONObject) reports.get(key);
-			Document reportDoc = Document.parse(reportJSON.toJSONString());
+			Document reportDoc;
+			try{
+				reportDoc = Document.parse(reportJSON.toJSONString());
+			}catch(Exception e){
+				throw new Exception(e);
+			}
 			return reportDoc;
 		}
 

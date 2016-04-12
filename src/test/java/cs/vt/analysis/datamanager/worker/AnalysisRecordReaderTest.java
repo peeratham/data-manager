@@ -41,7 +41,7 @@ public class AnalysisRecordReaderTest {
 	}
 	
 	@Test
-	public void testExtractMasteryReport() throws IOException, ParseException{
+	public void testExtractMasteryReport() throws Exception{
 		InputStream in = Main.class.getClassLoader()
 				.getResource(ANALYSIS_OUTPUT_FILENAME).openStream();
 		String inputString = IOUtils.toString(in);
