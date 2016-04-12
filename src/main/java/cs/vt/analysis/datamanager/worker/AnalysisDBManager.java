@@ -163,6 +163,10 @@ public class AnalysisDBManager {
 		db.getCollection(CREATOR_COLLECTION_NAME).drop();
 		
 	}
+
+	public long getCreatorsSize() {
+		return db.getCollection(CREATOR_COLLECTION_NAME).count();
+	}
 	
 		
 }

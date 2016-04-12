@@ -56,6 +56,10 @@ public class AnalysisRecordReader {
 		public Document getReportAsDocument(){
 			return fullReportDoc;
 		}
+
+		public JSONObject parse(String string) throws ParseException {
+			return (JSONObject) new JSONParser().parse(string);
+		}
 		
 		
 		

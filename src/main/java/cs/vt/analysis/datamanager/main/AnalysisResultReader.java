@@ -15,6 +15,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.IOUtils;
 import org.bson.Document;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import cs.vt.analysis.datamanager.crawler.Creator;
 import cs.vt.analysis.datamanager.worker.AnalysisDBManager;
@@ -82,32 +83,29 @@ public class AnalysisResultReader {
 		in.close();
 
 		lines.forEach((line) -> {
-			String[] lineRecord = line.split("\t");
-			int projectID = Integer.parseInt(lineRecord[0]);
-			AnalysisRecordReader reader = new AnalysisRecordReader();
-			try {
-				reader.process(lineRecord[1]);
-				dbManager.putAnalysisReport(projectID,
-						reader.getReportAsDocument());
-				Document masteryReport = reader.getDoc("Mastery Level");
-				if (masteryReport != null) {
-					String creatorName = dbManager.lookUpCreator(projectID);
-					if (creatorName == null) {
-						creatorName = "creatorOf" + projectID;
-					}
-					Creator creator = new Creator(creatorName);
-					creator.addProjectID(projectID);
-
-					creator.setMasteryReport(masteryReport);
-					dbManager.putCreatorRecord(creator.toDocument());
-				}
-
-			} catch (Exception e) {
-				System.err.println("Error reading project: " + projectID);
-				e.printStackTrace();
-			}
+			processLine(dbManager, line);
 		});
 
+	}
+
+	public static void processLine(AnalysisDBManager dbManager, String line) {
+		String[] lineRecord = line.split("\t");
+		int projectID = Integer.parseInt(lineRecord[0]);
+		try {
+			Document fullReportDoc = Document.parse(lineRecord[1]);
+			dbManager.putAnalysisReport(projectID, fullReportDoc);
+			String creatorName = dbManager.lookUpCreator(projectID);
+			if(fullReportDoc.containsKey("Mastery Level") && creatorName!=null){
+				Document masteryReport = (Document) fullReportDoc.get("Mastery Level");
+				Creator creator = new Creator(creatorName);
+				creator.addProjectID(projectID);
+				creator.setMasteryReport(masteryReport);
+				dbManager.putCreatorRecord(creator.toDocument());
+			}
+		} catch (Exception e) {
+			System.err.println("Error reading project: " + projectID);
+			e.printStackTrace();
+		}
 	}
 
 }

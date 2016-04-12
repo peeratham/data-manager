@@ -16,6 +16,28 @@ public class ProjectMetadata {
 	private int loveCount = 0;
 	private int views = 0;
 	private int remixes = 0;
+	@Override
+	public String toString() {
+		return "ProjectMetadata [projectID="
+				+ projectID
+				+ ", "
+				+ (title != null ? "title=" + title + ", " : "")
+				+ (creator != null ? "creator=" + creator + ", " : "")
+				+ "favoriteCount="
+				+ favoriteCount
+				+ ", loveCount="
+				+ loveCount
+				+ ", views="
+				+ views
+				+ ", remixes="
+				+ remixes
+				+ ", "
+				+ (modifiedDate != null ? "modifiedDate=" + modifiedDate + ", "
+						: "")
+				+ (dateShared != null ? "dateShared=" + dateShared + ", " : "")
+				+ "originalProjectID=" + originalProjectID + "]";
+	}
+
 	public int getFavoriteCount() {
 		return favoriteCount;
 	}
