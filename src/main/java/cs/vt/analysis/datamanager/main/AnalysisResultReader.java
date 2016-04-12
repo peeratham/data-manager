@@ -22,25 +22,26 @@ import cs.vt.analysis.datamanager.worker.AnalysisRecordReader;
 
 public class AnalysisResultReader {
 	private static File resultDirectory;
-	
-	
-	public static void main(String[] args){
+
+	public static void main(String[] args) {
 		final Options options = createOptions();
 		try {
 			final CommandLine line = getCommandLine(options, args);
 			boolean isDir = setAnalysisResultDir(line.getOptionValue("dir"));
-			if(!isDir){
-				System.err.println(resultDirectory + "is not a valid directory");
+			if (!isDir) {
+				System.err
+						.println(resultDirectory + "is not a valid directory");
 			}
 			AnalysisDBManager manager = new AnalysisDBManager();
 			processAnalysisResultFiles(manager);
-		}catch(Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
-	private static CommandLine getCommandLine(Options options, String[] args) throws ParseException {
+	private static CommandLine getCommandLine(Options options, String[] args)
+			throws ParseException {
 		final CommandLineParser parser = new BasicParser();
 		final CommandLine line;
 		line = parser.parse(options, args);
@@ -73,8 +74,8 @@ public class AnalysisResultReader {
 		return list;
 	}
 
-	private static void parseAndSaveResultToDatabase(AnalysisDBManager dbManager,
-			File part) throws IOException {
+	private static void parseAndSaveResultToDatabase(
+			AnalysisDBManager dbManager, File part) throws IOException {
 		ArrayList<JSONObject> reports = new ArrayList<JSONObject>();
 		InputStream in = new FileInputStream(part);
 		List<String> lines = IOUtils.readLines(in);
@@ -86,17 +87,23 @@ public class AnalysisResultReader {
 			AnalysisRecordReader reader = new AnalysisRecordReader();
 			try {
 				reader.process(lineRecord[1]);
-				dbManager.putAnalysisReport(projectID, reader.getReportAsDocument());
+				dbManager.putAnalysisReport(projectID,
+						reader.getReportAsDocument());
 				Document masteryReport = reader.getDoc("Mastery Level");
-				String creatorName = dbManager.lookUpCreator(projectID);
-				if (creatorName == null) {
-					creatorName = "creatorOf" + projectID;
+				if (masteryReport != null) {
+					String creatorName = dbManager.lookUpCreator(projectID);
+					if (creatorName == null) {
+						creatorName = "creatorOf" + projectID;
+					}
+					Creator creator = new Creator(creatorName);
+					creator.addProjectID(projectID);
+
+					creator.setMasteryReport(masteryReport);
+					dbManager.putCreatorRecord(creator.toDocument());
 				}
-				Creator creator = new Creator(creatorName);
-				creator.addProjectID(projectID);
-				creator.setMasteryReport(masteryReport);
-				dbManager.putCreatorRecord(creator.toDocument());
+
 			} catch (Exception e) {
+				System.err.println("Error reading project: " + projectID);
 				e.printStackTrace();
 			}
 		});
