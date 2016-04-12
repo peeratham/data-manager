@@ -37,7 +37,6 @@ public class AnalysisRecordReaderTest {
 		in.close();
 		reader.process(inputString);
 		Document doc = reader.getFullReportAsDoc();
-		System.out.println(doc);
 	}
 	
 	@Test
@@ -48,7 +47,20 @@ public class AnalysisRecordReaderTest {
 		in.close();
 		reader.process(inputString);
 		Document masteryReport = reader.getDoc("Mastery Level");
-		System.out.println(masteryReport.toJson());
+	}
+	
+	@Test
+	public void testEmptyJSONDuetoFailedAnalysis() throws IOException, ParseException{
+		String emptyOutput = "69004564-m-2";
+		InputStream in = Main.class.getClassLoader()
+				.getResource(emptyOutput).openStream();
+		String inputString = IOUtils.toString(in);
+		in.close();
+		
+		reader.process(inputString);
+		Document doc = reader.getFullReportAsDoc();
+		Document masteryReport = reader.getDoc("Mastery Level");
+		System.out.println(masteryReport);
 	}
 	
 	
