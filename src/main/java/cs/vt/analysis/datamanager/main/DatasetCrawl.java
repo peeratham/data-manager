@@ -53,7 +53,15 @@ public class DatasetCrawl {
 			databaseName = prop.getProperty("DB_NAME");
 			Crawler crawler = new Crawler();
 			crawler.setNumberOfProjectToCollect(numOfProjects);
-			DBManager = new AnalysisDBManager();
+			
+			
+			String host = line.getOptionValue("h");
+			if (host==null){
+				DBManager = new AnalysisDBManager();
+			}else{
+				DBManager = new AnalysisDBManager(host);
+			}
+			
 			DBManager.setDBName(databaseName);
 			resourceManager = new FileResourceManager();
 			resourceManager.setDatasetDirectory(outputDirectory);
@@ -111,6 +119,7 @@ public class DatasetCrawl {
 		final Options options = new Options();
 		options.addOption("n", true, "number of projects to download");
 		options.addOption("cf", true, "configuration file for crawler");
+		options.addOption("h", true, "host for mongod instance");
 		
 
 		return options;
