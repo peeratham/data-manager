@@ -19,10 +19,11 @@ public class AnalysisDBManager {
 	private static final String REPORT_COLLECTION_NAME = "reports";
 	private static final String CREATOR_COLLECTION_NAME = "creators";
 	private MongoDatabase db = null;
-	private MongoClient mongoClient = new MongoClient();
+	private MongoClient mongoClient;
 	
 	
 	public AnalysisDBManager(){
+		mongoClient = new MongoClient();
 		setAnalysisDBManagerForTest(false);		
 		db.getCollection(CREATOR_COLLECTION_NAME).createIndex(new Document("creator", "text"));
 		
@@ -36,9 +37,8 @@ public class AnalysisDBManager {
 		}
 	}
 	
-	public AnalysisDBManager(String DBName){
-		db = mongoClient.getDatabase(DBName);
-		db.getCollection(CREATOR_COLLECTION_NAME).createIndex(new Document("creator", "text"));
+	public AnalysisDBManager(String host){
+		mongoClient = new MongoClient(host);
 	}
 	
 	public void putMetadata(Document doc) {
@@ -166,6 +166,16 @@ public class AnalysisDBManager {
 
 	public long getCreatorsSize() {
 		return db.getCollection(CREATOR_COLLECTION_NAME).count();
+	}
+
+	public void setHost(String host) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setDBName(String DBName) {
+		db = mongoClient.getDatabase(DBName);
+		db.getCollection(CREATOR_COLLECTION_NAME).createIndex(new Document("creator", "text"));
 	}
 	
 		

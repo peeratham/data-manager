@@ -33,7 +33,14 @@ public class AnalysisResultReader {
 				System.err
 						.println(resultDirectory + "is not a valid directory");
 			}
-			AnalysisDBManager manager = new AnalysisDBManager();
+			AnalysisDBManager manager;
+			String host = line.getOptionValue("host");
+			if (host==null){
+				manager = new AnalysisDBManager(host);
+			}else{
+				manager = new AnalysisDBManager();
+			}
+			 
 			processAnalysisResultFiles(manager);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -52,6 +59,7 @@ public class AnalysisResultReader {
 	private static Options createOptions() {
 		final Options options = new Options();
 		options.addOption("dir", true, "analysis result direcotry");
+		options.addOption("host", false, "host for mongod instance");
 		return options;
 	}
 

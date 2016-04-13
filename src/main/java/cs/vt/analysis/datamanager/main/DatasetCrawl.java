@@ -53,7 +53,8 @@ public class DatasetCrawl {
 			databaseName = prop.getProperty("DB_NAME");
 			Crawler crawler = new Crawler();
 			crawler.setNumberOfProjectToCollect(numOfProjects);
-			DBManager = new AnalysisDBManager(databaseName);
+			DBManager = new AnalysisDBManager();
+			DBManager.setDBName(databaseName);
 			resourceManager = new FileResourceManager();
 			resourceManager.setDatasetDirectory(outputDirectory);
 			
