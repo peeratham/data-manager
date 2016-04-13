@@ -39,6 +39,8 @@ public class AnalysisDBManager {
 	
 	public AnalysisDBManager(String host){
 		mongoClient = new MongoClient(host);
+		setAnalysisDBManagerForTest(false);
+                db.getCollection(CREATOR_COLLECTION_NAME).createIndex(new Document("creator", "text"));
 	}
 	
 	public void putMetadata(Document doc) {
