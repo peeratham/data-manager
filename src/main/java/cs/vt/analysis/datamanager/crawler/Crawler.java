@@ -70,7 +70,7 @@ public class Crawler {
 						logger.error("Skipped crawling for listing @ "
 								+ listingIndex);
 						logger.error("Exception while calling URL:" + URL);
-						continue;
+						break;
 
 					}
 				}
