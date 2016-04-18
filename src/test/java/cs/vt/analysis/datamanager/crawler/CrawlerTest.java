@@ -43,9 +43,10 @@ public class CrawlerTest {
 	public void testRetrieveProjectMetadataFromHTMLPage() throws Exception {
 		int projectID = 43026762;
 		ProjectMetadata metadata = new ProjectMetadata(projectID);
-		crawler.retrieveProjectMetadata(metadata);
+		metadata = crawler.retrieveProjectMetadata(metadata);
 		assertEquals("Amplex", metadata.getTitle());
 		assertEquals("Unrealisation", metadata.getCreator());
+		assertNotNull(metadata);
 		assertNotNull(metadata.getFavoriteCount());
 		assertNotNull(metadata.getLoveCount());
 		assertNotNull(metadata.getViews());
@@ -73,6 +74,13 @@ public class CrawlerTest {
 		crawler.retrieveProjectMetadata(metadata1);
 		assertEquals(originalProjectID, metadata1.getOriginal());
 		
+	}
+	
+	@Test
+	public void testProjectListingCrawl(){
+		Crawler crawler = new Crawler();
+		crawler.setNumberOfProjectToCollect(5);
+		List<ProjectMetadata> projectMetadataListing = crawler.getProjectsFromQuery();
 	}
 
 }

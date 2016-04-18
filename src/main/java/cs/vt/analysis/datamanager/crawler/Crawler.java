@@ -38,13 +38,12 @@ public class Crawler {
 
 	public List<ProjectMetadata> getProjectsFromQuery() {
 		ArrayList<ProjectMetadata> result = new ArrayList<ProjectMetadata>();
-		RetryOnException retry = new RetryOnException();
 		int listingIndex = 1;
 
 		while (result.size() < numProjectToCollect) {
 			logger.info("crawling @ listingIndex:" + listingIndex);
 			String URL = String.format(baseURL, listingIndex);
-
+			RetryOnException retry = new RetryOnException(3,2000);
 			while (retry.shouldRetry()) {
 				try {
 					String doc = Jsoup.connect(URL).ignoreContentType(true)
@@ -88,7 +87,7 @@ public class Crawler {
 
 	public ProjectMetadata retrieveProjectMetadata(ProjectMetadata metadata)
 			throws Exception {
-		RetryOnException retry = new RetryOnException();
+		RetryOnException retry = new RetryOnException(3,2000);
 		Document doc = null;
 		String projectPageURL = String.format(pageURL, metadata.getProjectID());
 		while (retry.shouldRetry()) {
@@ -99,14 +98,16 @@ public class Crawler {
 				try {
 					retry.errorOccured();
 				} catch (Exception failAttemptException) {
-					throw new RuntimeException("Exception while calling URL:"
-							+ projectPageURL, failAttemptException);
+//					throw new RuntimeException("Exception while calling URL:"
+//							+ projectPageURL, failAttemptException);
+					logger.error("Error retrieving metadata for project: "+ metadata.getProjectID() + "...skipping..." );
+					return null;
 				}
 			}
 		}
 
 		if (doc == null) {
-			throw new Exception("Fail to retrieve project at:" + projectPageURL);
+//			throw new Exception("Fail to retrieve project at:" + projectPageURL);
 		}
 
 		Elements favCntSpan = doc.select("span[data-content=\"fav-count\"]");
@@ -190,7 +191,7 @@ public class Crawler {
 	public String retrieveProjectSourceFromProjectID(int projectID)
 			throws Exception {
 		String projectSrcURL = String.format(baseDownLoadURL, projectID);
-		RetryOnException retry = new RetryOnException();
+		RetryOnException retry = new RetryOnException(3,2000);
 		String src = null;
 		while (retry.shouldRetry()) {
 			try {
@@ -201,15 +202,16 @@ public class Crawler {
 				try {
 					retry.errorOccured();
 				} catch (Exception failAttemptException) {
-					throw new RuntimeException("Exception while calling URL:"
-							+ projectSrcURL, failAttemptException);
+//					throw new RuntimeException("Exception while calling URL:"
+//							+ projectSrcURL, failAttemptException);
+					logger.error("fail to retrieve source for: "+projectID+"...skipping..." );
 				}
 			}
 		}
 
-		if (src == null) {
-			throw new Exception("Fail to retrieve project at:" + projectSrcURL);
-		}
+//		if (src == null) {
+//			throw new Exception("Fail to retrieve project at:" + projectSrcURL);
+//		}
 
 		return src;
 	}

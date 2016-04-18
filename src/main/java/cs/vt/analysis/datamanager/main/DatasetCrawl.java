@@ -77,15 +77,16 @@ public class DatasetCrawl {
 					continue;
 				}
 				try {
-					crawler.retrieveProjectMetadata(current);
+					current = crawler.retrieveProjectMetadata(current);
+					if(current!=null){
 					String src = crawler.retrieveProjectSourceFromProjectID(current.getProjectID());
-					String singleLineJSONSrc = ((JSONObject) parser.parse(src)).toJSONString();
-					resourceManager.write(current.getProjectID() + ".json", singleLineJSONSrc);
-					DBManager.putMetadata(current.toDocument());
-					downloadedProjects++;
-					double percentCompleteion = ((double)downloadedProjects/(double)numOfProjects)*100;
-					logger.info(percentCompleteion+"%  "+i + "/" + numOfProjects + " saved metadata for project" + current.getProjectID());
-
+						String singleLineJSONSrc = ((JSONObject) parser.parse(src)).toJSONString();
+						resourceManager.write(current.getProjectID() + ".json", singleLineJSONSrc);
+						DBManager.putMetadata(current.toDocument());
+						downloadedProjects++;
+						double percentCompleteion = ((double)downloadedProjects/(double)numOfProjects)*100;
+						logger.info(percentCompleteion+"%  "+i + "/" + numOfProjects + " saved metadata for project" + current.getProjectID());
+					}
 				} catch (ParseException | IOException e) {
 					e.printStackTrace();
 				} catch (Exception e) {
