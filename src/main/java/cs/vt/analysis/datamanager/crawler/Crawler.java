@@ -58,7 +58,7 @@ public class Crawler {
 						ProjectMetadata proj = new ProjectMetadata(projectID);
 						proj.setTitle(title);
 						result.add(proj);
-						if (result.size() == numProjectToCollect) {
+						if (result.size() >= numProjectToCollect) {
 							break;
 						}
 					}
@@ -67,11 +67,10 @@ public class Crawler {
 					try {
 						retry.errorOccured();
 					} catch (Exception failAttemptException) {
-						logger.error("End crawling for listing @ "
+						logger.error("Skipped crawling for listing @ "
 								+ listingIndex);
 						logger.error("Exception while calling URL:" + URL);
-
-						return result;
+						continue;
 
 					}
 				}
