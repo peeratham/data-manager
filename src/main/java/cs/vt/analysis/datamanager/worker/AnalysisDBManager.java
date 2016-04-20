@@ -2,6 +2,9 @@ package cs.vt.analysis.datamanager.worker;
 
 import static com.mongodb.client.model.Filters.eq;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -9,24 +12,24 @@ import org.bson.Document;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.FindIterable;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.DeleteResult;
-
-import cs.vt.analysis.datamanager.main.Main;
 
 public class AnalysisDBManager {
 	private static final String METADATA_COLLECTION_NAME = "metadata";
 	private static final String REPORT_COLLECTION_NAME = "reports";
 	private static final String CREATOR_COLLECTION_NAME = "creators";
+	private static final String SOURCE_COLLECTION_NAME = "sources";
 	private MongoDatabase db = null;
 	private MongoClient mongoClient;
+	private static String MONGOEXPORT_BIN ="";
 	
 	
 	public AnalysisDBManager(){
 		mongoClient = new MongoClient();
 		setAnalysisDBManagerForTest(false);		
 		db.getCollection(CREATOR_COLLECTION_NAME).createIndex(new Document("creator", "text"));
-		
 	}
 	
 	public void setAnalysisDBManagerForTest(boolean isTest){
@@ -178,6 +181,83 @@ public class AnalysisDBManager {
 	public void setDBName(String DBName) {
 		db = mongoClient.getDatabase(DBName);
 		db.getCollection(CREATOR_COLLECTION_NAME).createIndex(new Document("creator", "text"));
+	}
+
+	public void putSource(int projectID, String src) {
+		Document source = new Document() ;
+		source.append("_id", projectID);
+		source.append("src", src);
+		
+		if(findSource(projectID) == null){
+			db.getCollection(SOURCE_COLLECTION_NAME).insertOne(source);
+		}else{
+			db.getCollection(SOURCE_COLLECTION_NAME).findOneAndReplace(eq("_id", projectID), source);
+		}
+	}
+
+	private Document findSource(int projectID) {
+		FindIterable<Document> iterable = db.getCollection(SOURCE_COLLECTION_NAME).find(eq("_id", projectID));
+		return iterable.first();
+	}
+
+	public long getSourcesSize() {
+		return db.getCollection(SOURCE_COLLECTION_NAME).count();
+	}
+
+	public void clearSources() {
+		db.getCollection(SOURCE_COLLECTION_NAME).drop();
+		
+	}
+
+	public void export(String host, String db, String collection, int skip, int limit, String outputDir) {
+
+		try {
+			Runtime rt = Runtime.getRuntime();
+			
+			
+			
+			String[] commands = {MONGOEXPORT_BIN, "--host="+host, "--db="+db, "-c="+collection, "--sort={_id:1}", "--skip="+skip, "--limit="+limit, "-o="+outputDir};
+			Process proc = rt.exec(commands);
+			BufferedReader stdInput = new BufferedReader(new 
+				     InputStreamReader(proc.getInputStream()));
+
+				BufferedReader stdError = new BufferedReader(new 
+				     InputStreamReader(proc.getErrorStream()));
+
+				// read the output from the command
+				System.out.println("Here is the standard output of the command:\n");
+				String s = null;
+				while ((s = stdInput.readLine()) != null) {
+				    System.out.println(s);
+				}
+
+				// read any errors from the attempted command
+				System.out.println("Here is the standard error of the command (if any):\n");
+				while ((s = stdError.readLine()) != null) {
+				    System.out.println(s);
+				}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 
+
+	}
+
+	public void setMongoExportPath(String mongoexport) {
+		this.MONGOEXPORT_BIN  = mongoexport;
+	}
+
+	
+	public void exportWithLimitPerFile(String host, String db, String collection, String outputPath, int limit) {
+		int pageNumber = 0;
+		MongoDatabase database = mongoClient.getDatabase(db);
+		long total = database.getCollection(collection).count();
+		
+		while(pageNumber < Math.ceil((double)total/limit)){
+			export(host, db, collection, pageNumber*limit, limit, outputPath+"/"+collection+"-"+pageNumber+".json");
+			pageNumber++;
+		}
 	}
 	
 		
