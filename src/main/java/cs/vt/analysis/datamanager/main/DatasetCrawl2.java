@@ -88,7 +88,7 @@ public class DatasetCrawl2 implements Runnable {
 					}
 				} catch (Exception e) {
 					failureCounter ++;
-					logger.error(e);
+					logger.error("ID:"+ current.getProjectID()+" - "+e);
 				}
 			}
 			endTime = System.nanoTime();
