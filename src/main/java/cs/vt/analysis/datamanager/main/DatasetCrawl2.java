@@ -127,6 +127,7 @@ public class DatasetCrawl2 implements Runnable {
 		options.addOption("n", true, "number of projects to download");
 		options.addOption("db", true, "database name");
 		options.addOption("h", true, "host for mongod instance");
+		options.addOption("l", true, "log file directory");
 		
 
 		return options;
