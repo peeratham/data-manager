@@ -41,7 +41,7 @@ public class Crawler {
 		int listingIndex = 1;
 
 		while (result.size() < numProjectToCollect) {
-			logger.info("crawling @ listingIndex:" + listingIndex);
+//			logger.info("crawling @ listingIndex:" + listingIndex);
 			String URL = String.format(baseURL, listingIndex);
 			RetryOnException retry = new RetryOnException(3,2000);
 			while (retry.shouldRetry()) {
@@ -100,7 +100,7 @@ public class Crawler {
 				} catch (Exception failAttemptException) {
 //					throw new RuntimeException("Exception while calling URL:"
 //							+ projectPageURL, failAttemptException);
-					logger.error("Error retrieving metadata for project: "+ metadata.getProjectID() + "...skipping..." );
+//					logger.error("Error retrieving metadata for project: "+ metadata.getProjectID() + "...skipping..." );
 					return null;
 				}
 			}

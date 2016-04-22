@@ -28,7 +28,7 @@ public class RetryOnException {
 	}
 
 	public void errorOccured() throws Exception {
-		System.err.println("Retry");
+//		System.err.println("Retry");
 		numberOfTriesLeft--;
 		if (!shouldRetry()) {
 			throw new Exception("Retry Failed: Total " + numberOfRetries

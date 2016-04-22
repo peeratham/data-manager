@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE log4j:configuration SYSTEM "log4j.dtd" >
+<log4j:configuration>
+    <appender name="CA" class="org.apache.log4j.ConsoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="%m%n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelMatchFilter">
+            <param name="LevelToMatch" value="ERROR" />
+            <param name="AcceptOnMatch" value="false" />
+        </filter>
+    </appender>
+    
+    <appender name="util" class="org.apache.log4j.FileAppender">
+        <param name="File" value="util.log" />
+        <param name="Append" value="false" />
+        <layout class="org.apache.log4j.PatternLayout">
+          <param name="ConversionPattern" value="%t %-5p %c{2} - %m%n"/>
+        </layout>
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+          <param name="levelMin" value="DEBUG" />
+		  <param name="levelMax" value="FATAL" />
+        </filter>           
+     </appender>
+
+    <!--If you want to enable logging for the application but wish to disable logging for a specific package then use this, where org.jboss is the package for which you wish to disable logging.-->
+   
+    <root>
+        <priority value="debug"/> <!--Notice this disables all logging-->
+        <appender-ref ref="CA"/>
+        <appender-ref ref="util"/>
+    </root>
+
+</log4j:configuration>
