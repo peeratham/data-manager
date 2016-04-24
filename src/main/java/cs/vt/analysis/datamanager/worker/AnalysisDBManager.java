@@ -28,7 +28,7 @@ public class AnalysisDBManager {
 	
 	public AnalysisDBManager(){
 		mongoClient = new MongoClient();
-		setAnalysisDBManagerForTest(false);		
+		setAnalysisDBManagerForTest(true);		
 		db.getCollection(CREATOR_COLLECTION_NAME).createIndex(new Document("creator", "text"));
 	}
 	
