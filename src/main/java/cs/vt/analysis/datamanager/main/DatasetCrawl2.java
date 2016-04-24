@@ -22,7 +22,7 @@ import cs.vt.analysis.datamanager.worker.Progress;
 
 public class DatasetCrawl2 implements Runnable {
 	
-	private static int numOfProjects=500;
+	private static int numOfProjects=3000;
 	public static String configurationFilePath = "";
 	private static String databaseName = "test";
 	private static AnalysisDBManager DBManager;
@@ -42,8 +42,7 @@ public class DatasetCrawl2 implements Runnable {
 		
 		final Options options = createOptions();
 		
-		Thread thread = new Thread(new DatasetCrawl2());
-		thread.start();
+		Thread srcRetrievalStatusThread = new Thread(new DatasetCrawl2());
 		
 		try {
 			final CommandLine line = getCommandLine(options, args);
@@ -65,10 +64,14 @@ public class DatasetCrawl2 implements Runnable {
 			}
 			
 			DBManager.setDBName(databaseName);
+			logger.info("Running Project Listing Retrieval");
+			logger.info("Number of Projects to Collect: "+numOfProjects);
 			
 			List<ProjectMetadata> projectMetadataListing = crawler.getProjectsFromQuery();
+			
 			JSONParser parser = new JSONParser();
 			
+			srcRetrievalStatusThread.start();
 			startTime = System.nanoTime();
 			for (int i = 0; i < projectMetadataListing.size(); i++) {
 				ProjectMetadata current = projectMetadataListing.get(i);
@@ -95,7 +98,7 @@ public class DatasetCrawl2 implements Runnable {
 			elapsedTime = endTime-startTime;
 			
 			
-			thread.interrupt();
+			srcRetrievalStatusThread.interrupt();
 			
 			StringBuilder sb = new StringBuilder();
 			sb.append("Complete\n");
@@ -108,7 +111,7 @@ public class DatasetCrawl2 implements Runnable {
 
 		} catch (Exception e1) {
 			e1.printStackTrace();
-			thread.interrupt();
+			srcRetrievalStatusThread.interrupt();
 			
 		}
 	}
@@ -144,6 +147,8 @@ public class DatasetCrawl2 implements Runnable {
 
 	@Override
 	public void run() {
+		logger.info("#################################");
+		logger.info("Running Project Source Retrieval");
 		while(percentCompletion < 100){
 			percentCompletion = ((double)downloadedProjects/(double)(numOfProjects-failureCounter))*100;
 			try {

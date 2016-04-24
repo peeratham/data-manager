@@ -21,6 +21,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import cs.vt.analysis.datamanager.main.Main;
+import cs.vt.analysis.datamanager.worker.Progress;
 
 public class Crawler {
 
@@ -31,19 +32,44 @@ public class Crawler {
 
 	private int numProjectToCollect;
 	private JSONParser parser = new JSONParser();
+	private ArrayList<ProjectMetadata> result = new ArrayList<ProjectMetadata>();
+	private double percentCompletion = 0;
+	private Thread statusUpdateThread;
+	
+	Runnable updateProjectListingStatus = () -> { 
+		while(result.size() < numProjectToCollect){
+			percentCompletion = ((double)result.size()/(double)(numProjectToCollect ))*100;
+			try {
+				Progress.updateProgress(percentCompletion);
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				break;
+			}
+		}
+		
+		percentCompletion = ((double)result.size()/(double)(numProjectToCollect))*100;
+		Progress.updateProgress(percentCompletion);
+		logger.info("\nTotal Project IDs Retrieved: "+result.size());
+		Thread.currentThread().interrupt();
+	};
+	
+	
+	public Crawler(){
+		statusUpdateThread = new Thread(updateProjectListingStatus);
+		statusUpdateThread.start();
+	}
 
 	public void setNumberOfProjectToCollect(int num) {
 		numProjectToCollect = num;
 	}
 
 	public List<ProjectMetadata> getProjectsFromQuery() {
-		ArrayList<ProjectMetadata> result = new ArrayList<ProjectMetadata>();
 		int listingIndex = 1;
 
 		while (result.size() < numProjectToCollect) {
 //			logger.info("crawling @ listingIndex:" + listingIndex);
 			String URL = String.format(baseURL, listingIndex);
-			RetryOnException retry = new RetryOnException(3,2000);
+			RetryOnException retry = new RetryOnException(3 , 2000);
 			while (retry.shouldRetry()) {
 				try {
 					String doc = Jsoup.connect(URL).ignoreContentType(true)
@@ -77,6 +103,7 @@ public class Crawler {
 
 			listingIndex++;
 		}
+		statusUpdateThread.interrupt();
 
 		return result;
 	}
@@ -87,7 +114,7 @@ public class Crawler {
 
 	public ProjectMetadata retrieveProjectMetadata(ProjectMetadata metadata)
 			throws Exception {
-		RetryOnException retry = new RetryOnException(3,2000);
+		RetryOnException retry = new RetryOnException(3 , 2000);
 		Document doc = null;
 		String projectPageURL = String.format(pageURL, metadata.getProjectID());
 		while (retry.shouldRetry()) {
@@ -191,7 +218,7 @@ public class Crawler {
 	public String retrieveProjectSourceFromProjectID(int projectID)
 			throws Exception {
 		String projectSrcURL = String.format(baseDownLoadURL, projectID);
-		RetryOnException retry = new RetryOnException(3,2000);
+		RetryOnException retry = new RetryOnException(3 , 2000);
 		String src = null;
 		while (retry.shouldRetry()) {
 			try {
