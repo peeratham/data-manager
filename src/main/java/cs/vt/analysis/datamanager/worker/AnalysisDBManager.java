@@ -209,7 +209,7 @@ public class AnalysisDBManager {
 		
 	}
 
-	public void export(String host, String db, String collection, int skip, int limit, String outputDir) {
+	public void export(String host, String db, String collection, int skip, int limit, String outputDir) throws InterruptedException {
 
 		try {
 			Runtime rt = Runtime.getRuntime();
@@ -218,6 +218,9 @@ public class AnalysisDBManager {
 			
 			String[] commands = {MONGOEXPORT_BIN, "--host="+host, "--db="+db, "-c="+collection, "--sort={_id:1}", "--skip="+skip, "--limit="+limit, "-o="+outputDir};
 			Process proc = rt.exec(commands);
+			System.out.println("Exporting records range: ("+ skip + "==>"+ skip+limit+")");
+			proc.waitFor();
+			
 			BufferedReader stdInput = new BufferedReader(new 
 				     InputStreamReader(proc.getInputStream()));
 
@@ -249,7 +252,7 @@ public class AnalysisDBManager {
 	}
 
 	
-	public void exportWithLimitPerFile(String host, String db, String collection, String outputPath, int limit) {
+	public void exportWithLimitPerFile(String host, String db, String collection, String outputPath, int limit) throws InterruptedException {
 		int pageNumber = 0;
 		MongoDatabase database = mongoClient.getDatabase(db);
 		long total = database.getCollection(collection).count();

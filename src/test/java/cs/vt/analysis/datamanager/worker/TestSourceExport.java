@@ -22,7 +22,7 @@ public class TestSourceExport {
 
 	@Ignore
 	@Test
-	public void testExport() {
+	public void testExport() throws InterruptedException {
 		String host = "localhost";
 		manager.setMongoExportPath("/opt/mongodb/bin/mongoexport");
 		manager.export(host, "analysis", "sources", 5, 5, "/Users/karn/Workspace/data-manager/target");
@@ -30,7 +30,7 @@ public class TestSourceExport {
 	
 	@Ignore
 	@Test
-	public void testBlockExport(){
+	public void testBlockExport() throws InterruptedException{
 		String host = "localhost";
 		manager.setMongoExportPath("/opt/mongodb/bin/mongoexport");
 		manager.exportWithLimitPerFile(host, "analysis", "sources", "/Users/karn/Workspace/data-manager/target", 3);
