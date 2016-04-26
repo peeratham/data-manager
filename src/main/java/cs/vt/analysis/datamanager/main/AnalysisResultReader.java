@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,7 +98,8 @@ public class AnalysisResultReader {
 				e.printStackTrace();
 			}
 			double percent = (double)i/(double)lines.size();
-			System.out.print("\r"+percent*100+"%");
+			DecimalFormat df = new DecimalFormat(".##");
+			System.out.print("\r"+df.format(percent*100)+"%");
 		}
 //		lines.forEach((line) -> {
 //			processLine(dbManager, line);
