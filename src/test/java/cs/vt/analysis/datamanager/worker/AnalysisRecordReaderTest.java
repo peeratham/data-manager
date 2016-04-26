@@ -1,10 +1,7 @@
 package cs.vt.analysis.datamanager.worker;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
 import org.bson.Document;
@@ -12,8 +9,6 @@ import org.json.simple.parser.ParseException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import cs.vt.analysis.datamanager.main.Main;
 
 public class AnalysisRecordReaderTest {
 
@@ -31,7 +26,7 @@ public class AnalysisRecordReaderTest {
 	
 	@Test
 	public void readAnalysisFile() throws IOException, ParseException{
-		InputStream in = Main.class.getClassLoader()
+		InputStream in = AnalysisRecordReaderTest.class.getClassLoader()
 				.getResource(ANALYSIS_OUTPUT_FILENAME).openStream();
 		String inputString = IOUtils.toString(in);
 		in.close();
@@ -41,7 +36,7 @@ public class AnalysisRecordReaderTest {
 	
 	@Test
 	public void testExtractMasteryReport() throws Exception{
-		InputStream in = Main.class.getClassLoader()
+		InputStream in = AnalysisRecordReaderTest.class.getClassLoader()
 				.getResource(ANALYSIS_OUTPUT_FILENAME).openStream();
 		String inputString = IOUtils.toString(in);
 		in.close();
@@ -52,7 +47,7 @@ public class AnalysisRecordReaderTest {
 	@Test
 	public void testEmptyJSONDuetoFailedAnalysis() throws IOException, ParseException{
 		String emptyOutput = "69004564-m-2";
-		InputStream in = Main.class.getClassLoader()
+		InputStream in = AnalysisRecordReaderTest.class.getClassLoader()
 				.getResource(emptyOutput).openStream();
 		String inputString = IOUtils.toString(in);
 		in.close();

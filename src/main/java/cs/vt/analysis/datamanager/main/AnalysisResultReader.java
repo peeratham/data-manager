@@ -36,11 +36,13 @@ public class AnalysisResultReader {
 			}
 			AnalysisDBManager manager;
 			String host = line.getOptionValue("h");
-			if (host==null){
-				manager = new AnalysisDBManager();
-			}else{
-				manager = new AnalysisDBManager(host);
-			}
+			String databaseName = line.getOptionValue("db");
+			manager = new AnalysisDBManager(host, databaseName);
+//			if (host==null){
+//				manager = new AnalysisDBManager();
+//			}else{
+//				manager = new AnalysisDBManager(host);
+//			}
 			 
 			processAnalysisResultFiles(manager);
 		} catch (Exception e) {
@@ -61,6 +63,7 @@ public class AnalysisResultReader {
 		final Options options = new Options();
 		options.addOption("dir", true, "analysis result direcotry");
 		options.addOption("h", true, "host for mongod instance");
+		options.addOption("db", true, "database name");
 		return options;
 	}
 

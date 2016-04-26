@@ -20,7 +20,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import cs.vt.analysis.datamanager.main.Main;
 import cs.vt.analysis.datamanager.worker.Progress;
 
 public class Crawler {

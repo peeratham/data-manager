@@ -18,8 +18,7 @@ public class SourcesDBTest {
 
 	@Before
 	public void setUp() throws Exception {
-		manager = new AnalysisDBManager();
-		manager.setAnalysisDBManagerForTest(true);
+		manager = AnalysisDBManager.getTestAnalysisDBManager();
 		crawler = new Crawler();
 		parser = new JSONParser();
 	}

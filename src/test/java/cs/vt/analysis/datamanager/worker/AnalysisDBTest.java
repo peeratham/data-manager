@@ -1,8 +1,8 @@
 package cs.vt.analysis.datamanager.worker;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
@@ -12,12 +12,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import cs.vt.analysis.analyzer.AnalysisManager;
-import cs.vt.analysis.analyzer.parser.Util;
-import cs.vt.analysis.datamanager.crawler.Crawler;
-import cs.vt.analysis.datamanager.crawler.ProjectMetadata;
-import cs.vt.analysis.datamanager.main.Main;
-
 public class AnalysisDBTest {
 
 	private AnalysisDBManager manager;
@@ -26,7 +20,7 @@ public class AnalysisDBTest {
 
 	@Before
 	public void setUp() throws Exception {
-		manager = new AnalysisDBManager();
+		manager = AnalysisDBManager.getTestAnalysisDBManager();
 		reader = new AnalysisRecordReader();
 	}
 
@@ -39,7 +33,7 @@ public class AnalysisDBTest {
 	@Ignore
 	@Test
 	public void insertAnalysisReport() throws Exception {
-		InputStream in = Main.class.getClassLoader()
+		InputStream in = AnalysisDBTest.class.getClassLoader()
 				.getResource("88190066-m-1").openStream();
 		String inputString = IOUtils.toString(in);
 		in.close();

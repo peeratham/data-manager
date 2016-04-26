@@ -38,7 +38,7 @@ public class DatasetCrawl2 implements Runnable {
 
 	public static void main(String[] args){
 		// config log4j
-		PropertyConfigurator.configure(Main.class.getClassLoader().getResource("log4j.xml"));
+		PropertyConfigurator.configure(DatasetCrawl2.class.getClassLoader().getResource("log4j.xml"));
 		
 		final Options options = createOptions();
 		
@@ -57,13 +57,10 @@ public class DatasetCrawl2 implements Runnable {
 			Crawler crawler = new Crawler();
 			crawler.setNumberOfProjectToCollect(numOfProjects);
 			
-			if (host==null){
-				DBManager = new AnalysisDBManager();
-			}else{
-				DBManager = new AnalysisDBManager(host);
-			}
+			DBManager = new AnalysisDBManager(host,databaseName);
 			
-			DBManager.setDBName(databaseName);
+			
+//			DBManager.setDBName(databaseName);
 			logger.info("Running Project Listing Retrieval");
 			logger.info("Number of Projects to Collect: "+numOfProjects);
 			

@@ -1,10 +1,6 @@
 package cs.vt.analysis.datamanager.worker;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.io.InputStream;
-import java.util.ArrayList;
+import static org.junit.Assert.assertEquals;
 
 import org.bson.Document;
 import org.json.simple.JSONObject;
@@ -16,7 +12,6 @@ import cs.vt.analysis.analyzer.AnalysisManager;
 import cs.vt.analysis.datamanager.crawler.Crawler;
 import cs.vt.analysis.datamanager.crawler.ProjectMetadata;
 import cs.vt.analysis.datamanager.main.AnalysisResultReader;
-import cs.vt.analysis.datamanager.main.Main;
 
 public class AnalysisResultReaderTest {
 
@@ -25,9 +20,8 @@ public class AnalysisResultReaderTest {
 
 	@Before
 	public void setUp() throws Exception {
-		dir = Main.class.getClassLoader().getResource("test-output").getPath();
-		manager = new AnalysisDBManager();
-		manager.setAnalysisDBManagerForTest(true);
+		dir = AnalysisResultReaderTest.class.getClassLoader().getResource("test-output").getPath();
+		manager = AnalysisDBManager.getTestAnalysisDBManager();
 	}
 
 	@After

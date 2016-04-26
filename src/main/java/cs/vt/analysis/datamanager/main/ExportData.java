@@ -10,14 +10,15 @@ import cs.vt.analysis.datamanager.worker.AnalysisDBManager;
 public class ExportData {
 	private static AnalysisDBManager manager;
 	public static void main(String[] args) {
-		manager = new AnalysisDBManager();
+		
 		final Options options = createOptions();
 		try {
 			final CommandLine line = getCommandLine(options, args);
 			String mongoexport = line.getOptionValue("e");
-			manager.setMongoExportPath(mongoexport);
 			String host = line.getOptionValue("h");
 			String databaseName = line.getOptionValue("d");
+			manager = new AnalysisDBManager(host, databaseName);
+			manager.setMongoExportPath(mongoexport);
 			String collectionName = line.getOptionValue("c");
 			String outputDir = line.getOptionValue("o");
 			int limit = Integer.parseInt(line.getOptionValue("n"));

@@ -26,25 +26,35 @@ public class AnalysisDBManager {
 	private static String MONGOEXPORT_BIN ="";
 	
 	
-	public AnalysisDBManager(){
-		mongoClient = new MongoClient();
-		setAnalysisDBManagerForTest(true);		
-		db.getCollection(CREATOR_COLLECTION_NAME).createIndex(new Document("creator", "text"));
+//	public AnalysisDBManager(){
+//		mongoClient = new MongoClient();
+//		setAnalysisDBManagerForTest(true);		
+//		db.getCollection(CREATOR_COLLECTION_NAME).createIndex(new Document("creator", "text"));
+//	}
+	
+//	public void setAnalysisDBManagerForTest(boolean isTest){
+//		if(isTest){
+//			db = mongoClient.getDatabase("test");
+//		}else{
+//			db = mongoClient.getDatabase("analysis");
+//		}
+//	}
+	
+	public static AnalysisDBManager getTestAnalysisDBManager(){
+		return new AnalysisDBManager("localhost","test");
 	}
 	
-	public void setAnalysisDBManagerForTest(boolean isTest){
-		if(isTest){
-			db = mongoClient.getDatabase("test");
-		}else{
-			db = mongoClient.getDatabase("analysis");
-		}
-	}
-	
-	public AnalysisDBManager(String host){
+	public AnalysisDBManager(String host, String dbName){
 		mongoClient = new MongoClient(host);
-		setAnalysisDBManagerForTest(false);
-                db.getCollection(CREATOR_COLLECTION_NAME).createIndex(new Document("creator", "text"));
+		db = mongoClient.getDatabase(dbName);
+        db.getCollection(CREATOR_COLLECTION_NAME).createIndex(new Document("creator", "text"));
 	}
+	
+//	public AnalysisDBManager(String host){
+//		mongoClient = new MongoClient(host);
+//		setAnalysisDBManagerForTest(false);
+//                db.getCollection(CREATOR_COLLECTION_NAME).createIndex(new Document("creator", "text"));
+//	}
 	
 	public void putMetadata(Document doc) {
 		int projectID = (Integer) doc.get("_id");

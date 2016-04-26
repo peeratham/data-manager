@@ -16,7 +16,7 @@ public class MetadataDBTest {
 
 	@Before
 	public void setUp() throws Exception {
-		manager = new AnalysisDBManager();
+		manager = AnalysisDBManager.getTestAnalysisDBManager();
 	}
 
 	@After
