@@ -89,14 +89,23 @@ public class AnalysisResultReader {
 		InputStream in = new FileInputStream(part);
 		List<String> lines = IOUtils.readLines(in);
 		in.close();
-
-		lines.forEach((line) -> {
-			processLine(dbManager, line);
-		});
+		
+		for(int i = 0; i < lines.size(); i++){
+			try {
+				processLine(dbManager, lines.get(i));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			double percent = (double)i/(double)lines.size();
+			System.out.print("\r"+percent*100+"%");
+		}
+//		lines.forEach((line) -> {
+//			processLine(dbManager, line);
+//		});
 
 	}
 
-	public static void processLine(AnalysisDBManager dbManager, String line) {
+	public static void processLine(AnalysisDBManager dbManager, String line) throws Exception {
 		String[] lineRecord = line.split("\t");
 		int projectID = Integer.parseInt(lineRecord[0]);
 		try {
@@ -111,8 +120,7 @@ public class AnalysisResultReader {
 				dbManager.putCreatorRecord(creator.toDocument());
 			}
 		} catch (Exception e) {
-			System.err.println("Error reading project: " + projectID);
-			e.printStackTrace();
+			throw new Exception("Error reading project: " + projectID);
 		}
 	}
 
