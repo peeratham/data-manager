@@ -122,7 +122,13 @@ public class AnalysisResultReader {
 				Creator creator = new Creator(creatorName);
 				creator.addProjectID(projectID);
 				creator.setMasteryReport(masteryReport);
-				dbManager.putCreatorRecord(creator.toDocument());
+				//check if project is original
+				Document metadata = dbManager.findMetadata(projectID);
+				if(metadata!=null){
+					if(metadata.get("_id").equals(metadata.get("original"))){
+						dbManager.putCreatorRecord(creator.toDocument());
+					}
+				}
 			}
 		} catch (Exception e) {
 			throw new Exception("Error reading project: " + projectID);

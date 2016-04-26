@@ -1,6 +1,8 @@
 package cs.vt.analysis.datamanager.worker;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import org.bson.Document;
 import org.json.simple.JSONObject;
@@ -53,7 +55,6 @@ public class AnalysisResultReaderTest {
 		
 		AnalysisManager blockAnalyzer = new AnalysisManager();
 		JSONObject result = blockAnalyzer.analyze(src);
-		AnalysisResultReader reader = new AnalysisResultReader();
 		
 		String line = "100204638\t{\"Uncommunicative Naming\":{\"instances\":[],\"count\":0},\"Unnecessary Broadcast\":{\"instances\":[],\"count\":0},\"Duplicate Code\":{\"instances\":[],\"count\":0},\"Mastery Level\":{\"FlowControl\":2,\"abstraction\":1,\"DataRepresentation\":1,\"Synchronization\":3,\"Logic\":0,\"User Interactivity\":1,\"Parallelization\":1},\"BroadCastWorkaround\":{\"instances\":[],\"count\":0},\"Unreachable Code\":{\"instances\":[],\"count\":0},\"spriteCount\":2,\"_id\":100204638,\"scriptCount\":3,\"Too Long Script\":{\"instances\":[],\"count\":0},\"Too Broad Variable Scope\":{\"instances\":[],\"count\":0}}";
 		AnalysisResultReader.processLine(manager, line);
@@ -61,6 +62,29 @@ public class AnalysisResultReaderTest {
 		assertEquals(1L, manager.getMetadataSize());
 		assertEquals(1L, manager.getReportSize());
 		assertEquals(1L, manager.getCreatorsSize());
+	}
+	
+	@Test
+	public void testCreatorUpdateOnlyIfProjectOriginal() throws Exception{
+		Document doc = new Document();
+		doc.append("_id", 1234);
+		doc.append("creator", "creator1");
+		doc.append("original", 2345);
+		manager.putMetadata(doc);
+		String reportRecord1 = "1234\t{\"Uncommunicative Naming\":{\"instances\":[],\"count\":0},\"Unnecessary Broadcast\":{\"instances\":[],\"count\":0},\"Duplicate Code\":{\"instances\":[],\"count\":0},\"Mastery Level\":{\"FlowControl\":2,\"abstraction\":1,\"DataRepresentation\":1,\"Synchronization\":3,\"Logic\":0,\"User Interactivity\":1,\"Parallelization\":1},\"BroadCastWorkaround\":{\"instances\":[],\"count\":0},\"Unreachable Code\":{\"instances\":[],\"count\":0},\"spriteCount\":2,\"_id\":1234,\"scriptCount\":3,\"Too Long Script\":{\"instances\":[],\"count\":0},\"Too Broad Variable Scope\":{\"instances\":[],\"count\":0}}";
+		AnalysisResultReader.processLine(manager, reportRecord1);
+		assertNull(manager.findCreatorRecord("creator1"));
+		
+		Document doc2 = new Document();
+		doc2.append("_id", 5678);
+		doc2.append("creator", "creator1");
+		doc2.append("original", 5678);
+		manager.putMetadata(doc2);
+		String reportRecord2 = "5678\t{\"Uncommunicative Naming\":{\"instances\":[],\"count\":0},\"Unnecessary Broadcast\":{\"instances\":[],\"count\":0},\"Duplicate Code\":{\"instances\":[],\"count\":0},\"Mastery Level\":{\"FlowControl\":2,\"abstraction\":1,\"DataRepresentation\":1,\"Synchronization\":3,\"Logic\":0,\"User Interactivity\":1,\"Parallelization\":1},\"BroadCastWorkaround\":{\"instances\":[],\"count\":0},\"Unreachable Code\":{\"instances\":[],\"count\":0},\"spriteCount\":2,\"_id\":5678,\"scriptCount\":3,\"Too Long Script\":{\"instances\":[],\"count\":0},\"Too Broad Variable Scope\":{\"instances\":[],\"count\":0}}";
+		AnalysisResultReader.processLine(manager, reportRecord2);
+		assertNotNull(manager.findCreatorRecord("creator1"));
+		
+		
 	}
 	
 
