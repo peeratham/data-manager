@@ -207,7 +207,7 @@ public class AnalysisDBManager {
 			
 			String[] commands = {MONGOEXPORT_BIN, "--host="+host, "--db="+db, "-c="+collection, "--sort={_id:1}", "--skip="+skip, "--limit="+limit, "-o="+outputDir};
 			Process proc = rt.exec(commands);
-			System.out.println("Exporting records range: ("+ skip + "==>"+ skip+limit+")");
+			System.out.println("Exporting records range: ("+ skip + " ==> "+ (skip+limit)+")");
 			proc.waitFor();
 			
 			BufferedReader stdInput = new BufferedReader(new 

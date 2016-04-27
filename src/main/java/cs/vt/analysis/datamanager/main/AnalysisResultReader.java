@@ -98,7 +98,7 @@ public class AnalysisResultReader {
 			try {
 				processLine(dbManager, lines.get(i));
 			} catch (Exception e) {
-				e.printStackTrace();
+//				e.printStackTrace();
 			}
 			double percent = (double)i/(double)lines.size();
 			DecimalFormat df = new DecimalFormat(".##");
