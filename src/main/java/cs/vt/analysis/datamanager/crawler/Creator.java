@@ -6,12 +6,12 @@ import org.bson.Document;
 
 public class Creator {
 
-	private String _id;
+	private String creator;
 	ArrayList<Integer> projectsCreated = new ArrayList<Integer>();
 	private Document masteryReport;
 
 	public Creator(String name) {
-		this._id = name;
+		this.creator = name;
 	}
 
 	public void addProjectID(int projectID) {
@@ -25,7 +25,7 @@ public class Creator {
 	@Override
 	public String toString() {
 		return "Creator ["
-				+ (_id != null ? "creator=" + _id + ", " : "")
+				+ (creator != null ? "creator=" + creator + ", " : "")
 				+ (projectsCreated != null ? "projectsCreated="
 						+ projectsCreated + ", " : "")
 				+ (masteryReport != null ? "masteryReport=" + masteryReport
@@ -34,7 +34,7 @@ public class Creator {
 
 	public Document toDocument() {
 		Document doc = new Document();
-		doc.append("creator", _id);
+		doc.append("_id", creator);
 		doc.append("projects_created", projectsCreated);
 		doc.append("mastery", masteryReport);
 		return doc;

@@ -25,21 +25,6 @@ public class AnalysisDBManager {
 	private MongoClient mongoClient;
 	private static String MONGOEXPORT_BIN ="";
 	
-	
-//	public AnalysisDBManager(){
-//		mongoClient = new MongoClient();
-//		setAnalysisDBManagerForTest(true);		
-//		db.getCollection(CREATOR_COLLECTION_NAME).createIndex(new Document("creator", "text"));
-//	}
-	
-//	public void setAnalysisDBManagerForTest(boolean isTest){
-//		if(isTest){
-//			db = mongoClient.getDatabase("test");
-//		}else{
-//			db = mongoClient.getDatabase("analysis");
-//		}
-//	}
-	
 	public static AnalysisDBManager getTestAnalysisDBManager(){
 		return new AnalysisDBManager("localhost","test");
 	}
@@ -49,12 +34,6 @@ public class AnalysisDBManager {
 		db = mongoClient.getDatabase(dbName);
         db.getCollection(CREATOR_COLLECTION_NAME).createIndex(new Document("creator", "text"));
 	}
-	
-//	public AnalysisDBManager(String host){
-//		mongoClient = new MongoClient(host);
-//		setAnalysisDBManagerForTest(false);
-//                db.getCollection(CREATOR_COLLECTION_NAME).createIndex(new Document("creator", "text"));
-//	}
 	
 	public void putMetadata(Document doc) {
 		int projectID = (Integer) doc.get("_id");
@@ -121,7 +100,7 @@ public class AnalysisDBManager {
 	}
 
 	public Document findCreatorRecord(String creator){
-		FindIterable<Document> iterable = db.getCollection(CREATOR_COLLECTION_NAME).find(eq("creator", creator));
+		FindIterable<Document> iterable = db.getCollection(CREATOR_COLLECTION_NAME).find(eq("_id", creator));
 		return iterable.first();	
 	}
 	

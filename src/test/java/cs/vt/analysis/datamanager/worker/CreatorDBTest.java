@@ -16,10 +16,12 @@ public class CreatorDBTest {
 	@Before
 	public void setUp() throws Exception {
 		manager = AnalysisDBManager.getTestAnalysisDBManager();
+		manager.clearCreatorRecords();
 	}
 
 	@After
 	public void tearDown() throws Exception {
+		manager.clearCreatorRecords();
 	}
 	
 	@Test
@@ -39,8 +41,8 @@ public class CreatorDBTest {
 
 	@Test
 	public void testInsertNonExistingUser() {
-		String userName = "userName";
-		Creator creator1 = new Creator(userName);
+		
+		Creator creator1 = new Creator("a");
 		int project1 = 1234;
 		creator1.addProjectID(project1);
 		String masteryInput1 = "{ \"FlowControl\" : 2, \"abstraction\" : 1, \"DataRepresentation\" : 2, \"Synchronization\" : 2, \"Logic\" : 3, \"User Interactivity\" : 1, \"Parallelization\" : 1 }";
@@ -49,7 +51,7 @@ public class CreatorDBTest {
 		manager.putCreatorRecord(creator1.toDocument());
 		
 		
-		Creator creator2 = new Creator(userName);
+		Creator creator2 = new Creator("b");
 		int project2 = 5678;
 		creator2.addProjectID(project2);
 		String masteryInput2 = "{ \"FlowControl\" : 3, \"abstraction\" : 0, \"DataRepresentation\" : 2, \"Synchronization\" : 3, \"Logic\" : 3, \"User Interactivity\" : 1, \"Parallelization\" : 1 }";
