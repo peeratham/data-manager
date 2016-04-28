@@ -2,6 +2,8 @@ package cs.vt.analysis.datamanager.worker;
 
 import static org.junit.Assert.*;
 
+import java.util.Properties;
+
 import org.bson.Document;
 import org.junit.After;
 import org.junit.Before;
@@ -16,6 +18,8 @@ public class MetadataDBTest {
 
 	@Before
 	public void setUp() throws Exception {
+		Properties props = System.getProperties();
+		props.setProperty("logDir", "./");
 		manager = AnalysisDBManager.getTestAnalysisDBManager();
 	}
 
@@ -26,7 +30,6 @@ public class MetadataDBTest {
 	@Test
 	public void connectToMongoDB() {
 		assertNotNull(manager);
-		
 	}
 	
 	@Test
@@ -35,7 +38,6 @@ public class MetadataDBTest {
 		ProjectMetadata metadata = new ProjectMetadata(projectID);
 		Crawler crawler = new Crawler();
 		crawler.retrieveProjectMetadata(metadata);
-		
 		Document doc = metadata.toDocument();
 		manager.putMetadata(doc);
 		Document result = manager.findMetadata(projectID);
@@ -60,11 +62,8 @@ public class MetadataDBTest {
 		ProjectMetadata metadata = new ProjectMetadata(projectID);
 		Crawler crawler = new Crawler();
 		crawler.retrieveProjectMetadata(metadata);
-		
 		Document doc = metadata.toDocument();
-	
 		manager.putMetadata(doc);
 		manager.putMetadata(doc);
-		
 	}
 }

@@ -87,6 +87,7 @@ public class AnalysisDBManager {
 		return db.getCollection(METADATA_COLLECTION_NAME).count();
 	}
 	public void putAnalysisReport(int projectID, Document report) {
+		report.put("_id", projectID);
 		if(findSmellReport(projectID) == null){
 			db.getCollection(REPORT_COLLECTION_NAME).insertOne(report);
 		}else{
@@ -242,6 +243,7 @@ public class AnalysisDBManager {
 	}
 
 	public void putMetricsReport(int projectID, Document metricsRecord) {
+		metricsRecord.put("_id", projectID);
 		if(findMetricsReport(projectID) == null){
 			db.getCollection(METRICS_COLLECTION_NAME).insertOne(metricsRecord);
 		}else{

@@ -6,7 +6,6 @@ import static org.junit.Assert.assertNull;
 
 import java.util.Properties;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.bson.Document;
 import org.json.simple.JSONObject;
 import org.junit.After;
@@ -47,21 +46,17 @@ public class AnalysisResultReaderTest {
 		ProjectMetadata metadata = new ProjectMetadata(projectID);
 		crawler.retrieveProjectMetadata(metadata);
 		String src = crawler.retrieveProjectSourceFromProjectID(projectID);
-		System.out.println(metadata);
 		
 		Document doc = metadata.toDocument();
 		manager.putMetadata(doc);
+		assertNotNull(manager.findMetadata(projectID));
 		
 		AnalysisManager blockAnalyzer = new AnalysisManager();
 		JSONObject result = blockAnalyzer.analyze(src);
 		
 		String line = projectID+"\t"+result.toJSONString();
 		AnalysisResultReader.processLine(manager, line);
-		
-		assertEquals(1L, manager.getMetadataSize());
-		assertEquals(1L, manager.getReportSize());
-		assertEquals(1L, manager.getCreatorsSize());
-		assertEquals(1L, manager.getMetricsSize());
+		assertNotNull(manager.findAnalysisReport(projectID));
 	}
 	
 	@Test
@@ -97,9 +92,7 @@ public class AnalysisResultReaderTest {
 		for(String line : lines.split("\n")){
 			AnalysisResultReader.processLine(manager, line);
 		}
-		assertEquals(projectIDs.length, manager.getMetricsSize());
-		assertEquals(projectIDs.length, manager.getReportSize());
-		assertEquals(2, manager.getCreatorsSize()); //one project is not original
+		
 	}
 	
 	public String analysisReportGenerator(int[] projectIDs) throws Exception{

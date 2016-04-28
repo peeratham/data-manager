@@ -16,11 +16,9 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.io.IOUtils;
 import org.bson.Document;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import cs.vt.analysis.datamanager.crawler.Creator;
 import cs.vt.analysis.datamanager.worker.AnalysisDBManager;
-import cs.vt.analysis.datamanager.worker.AnalysisRecordReader;
 
 public class AnalysisResultReader {
 	private static File resultDirectory;
@@ -123,6 +121,7 @@ public class AnalysisResultReader {
 			if(metrics.containsKey("Mastery Level") && creatorName!=null){
 				processCreatorRecord(dbManager, projectID, creatorName, metrics);
 			}
+			
 			dbManager.putMetricsReport(projectID, metrics);
 		} catch (Exception e) {
 			throw new Exception("Error reading project: " + projectID);

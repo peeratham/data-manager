@@ -2,6 +2,8 @@ package cs.vt.analysis.datamanager.worker;
 
 import static org.junit.Assert.*;
 
+import java.util.Properties;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.junit.After;
@@ -18,6 +20,8 @@ public class SourcesDBTest {
 
 	@Before
 	public void setUp() throws Exception {
+		Properties props = System.getProperties();
+		props.setProperty("logDir", "./");
 		manager = AnalysisDBManager.getTestAnalysisDBManager();
 		crawler = new Crawler();
 		parser = new JSONParser();
