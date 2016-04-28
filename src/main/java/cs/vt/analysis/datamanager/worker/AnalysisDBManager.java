@@ -19,6 +19,7 @@ import com.mongodb.client.result.DeleteResult;
 public class AnalysisDBManager {
 	private static final String METADATA_COLLECTION_NAME = "metadata";
 	private static final String REPORT_COLLECTION_NAME = "reports";
+	private static final String METRICS_COLLECTION_NAME = "metrics";
 	private static final String CREATOR_COLLECTION_NAME = "creators";
 	private static final String SOURCE_COLLECTION_NAME = "sources";
 	private MongoDatabase db = null;
@@ -55,7 +56,16 @@ public class AnalysisDBManager {
 			
 	}
 	
-	public Document findReport(int projectID){
+	public Document findSmellReport(int projectID){
+		FindIterable<Document> iterable = db.getCollection(REPORT_COLLECTION_NAME).find(eq("_id", projectID));
+		if(iterable==null){
+			return null;
+		}else{
+			return iterable.first();
+		}
+	}
+	
+	public Document findMetricsReport(int projectID){
 		FindIterable<Document> iterable = db.getCollection(REPORT_COLLECTION_NAME).find(eq("_id", projectID));
 		if(iterable==null){
 			return null;
@@ -77,12 +87,11 @@ public class AnalysisDBManager {
 		return db.getCollection(METADATA_COLLECTION_NAME).count();
 	}
 	public void putAnalysisReport(int projectID, Document report) {
-		if(findReport(projectID) == null){
+		if(findSmellReport(projectID) == null){
 			db.getCollection(REPORT_COLLECTION_NAME).insertOne(report);
 		}else{
 			db.getCollection(REPORT_COLLECTION_NAME).findOneAndReplace(eq("_id", projectID), report);
 		}
-		
 	}
 	
 	public void clearAnalysisReport() {
@@ -162,11 +171,6 @@ public class AnalysisDBManager {
 		return db.getCollection(CREATOR_COLLECTION_NAME).count();
 	}
 
-	public void setHost(String host) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	public void setDBName(String DBName) {
 		db = mongoClient.getDatabase(DBName);
 		db.getCollection(CREATOR_COLLECTION_NAME).createIndex(new Document("creator", "text"));
@@ -202,9 +206,6 @@ public class AnalysisDBManager {
 
 		try {
 			Runtime rt = Runtime.getRuntime();
-			
-			
-			
 			String[] commands = {MONGOEXPORT_BIN, "--host="+host, "--db="+db, "-c="+collection, "--sort={_id:1}", "--skip="+skip, "--limit="+limit, "-o="+outputDir};
 			Process proc = rt.exec(commands);
 			System.out.println("Exporting records range: ("+ skip + " ==> "+ (skip+limit)+")");
@@ -216,18 +217,6 @@ public class AnalysisDBManager {
 				BufferedReader stdError = new BufferedReader(new 
 				     InputStreamReader(proc.getErrorStream()));
 
-//				// read the output from the command
-//				System.out.println("Here is the standard output of the command:\n");
-//				String s = null;
-//				while ((s = stdInput.readLine()) != null) {
-//				    System.out.println(s);
-//				}
-//
-//				// read any errors from the attempted command
-//				System.out.println("Here is the standard error of the command (if any):\n");
-//				while ((s = stdError.readLine()) != null) {
-//				    System.out.println(s);
-//				}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -251,6 +240,23 @@ public class AnalysisDBManager {
 			pageNumber++;
 		}
 	}
-	
+
+	public void putMetricsReport(int projectID, Document metricsRecord) {
+		if(findMetricsReport(projectID) == null){
+			db.getCollection(METRICS_COLLECTION_NAME).insertOne(metricsRecord);
+		}else{
+			db.getCollection(METRICS_COLLECTION_NAME).findOneAndReplace(eq("_id", projectID), metricsRecord);
+		}
+	}
+
+	public void clearMetrics() {
+		db.getCollection(METRICS_COLLECTION_NAME).drop();
+		
+	}
+
+	public long getMetricsSize() {
+		return db.getCollection(METRICS_COLLECTION_NAME).count();
+	}
+
 		
 }

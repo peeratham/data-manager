@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import java.util.Properties;
+
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.bson.Document;
 import org.json.simple.JSONObject;
 import org.junit.After;
@@ -22,6 +25,8 @@ public class AnalysisResultReaderTest {
 
 	@Before
 	public void setUp() throws Exception {
+		Properties props = System.getProperties();
+		props.setProperty("logDir", "./");
 		dir = AnalysisResultReaderTest.class.getClassLoader().getResource("test-output").getPath();
 		manager = AnalysisDBManager.getTestAnalysisDBManager();
 	}
@@ -31,15 +36,9 @@ public class AnalysisResultReaderTest {
 		manager.clearMetadata();
 		manager.clearAnalysisReport();
 		manager.clearCreatorRecords();
+		manager.clearMetrics();
 	}
 
-	@Test
-	public void testSaveAnalysisRecords() throws Exception{
-		AnalysisResultReader reader = new AnalysisResultReader();
-		reader.setAnalysisResultDir(dir);
-		reader.processAnalysisResultFiles(manager);
-		assertEquals(10L,manager.getReportSize());
-	}
 	
 	@Test
 	public void testMetadataShouldMatchWithCreator() throws Exception{
@@ -56,12 +55,13 @@ public class AnalysisResultReaderTest {
 		AnalysisManager blockAnalyzer = new AnalysisManager();
 		JSONObject result = blockAnalyzer.analyze(src);
 		
-		String line = "100204638\t{\"Uncommunicative Naming\":{\"instances\":[],\"count\":0},\"Unnecessary Broadcast\":{\"instances\":[],\"count\":0},\"Duplicate Code\":{\"instances\":[],\"count\":0},\"Mastery Level\":{\"FlowControl\":2,\"abstraction\":1,\"DataRepresentation\":1,\"Synchronization\":3,\"Logic\":0,\"User Interactivity\":1,\"Parallelization\":1},\"BroadCastWorkaround\":{\"instances\":[],\"count\":0},\"Unreachable Code\":{\"instances\":[],\"count\":0},\"spriteCount\":2,\"_id\":100204638,\"scriptCount\":3,\"Too Long Script\":{\"instances\":[],\"count\":0},\"Too Broad Variable Scope\":{\"instances\":[],\"count\":0}}";
+		String line = projectID+"\t"+result.toJSONString();
 		AnalysisResultReader.processLine(manager, line);
 		
 		assertEquals(1L, manager.getMetadataSize());
 		assertEquals(1L, manager.getReportSize());
 		assertEquals(1L, manager.getCreatorsSize());
+		assertEquals(1L, manager.getMetricsSize());
 	}
 	
 	@Test
@@ -71,7 +71,7 @@ public class AnalysisResultReaderTest {
 		doc.append("creator", "creator1");
 		doc.append("original", 2345);
 		manager.putMetadata(doc);
-		String reportRecord1 = "1234\t{\"Uncommunicative Naming\":{\"instances\":[],\"count\":0},\"Unnecessary Broadcast\":{\"instances\":[],\"count\":0},\"Duplicate Code\":{\"instances\":[],\"count\":0},\"Mastery Level\":{\"FlowControl\":2,\"abstraction\":1,\"DataRepresentation\":1,\"Synchronization\":3,\"Logic\":0,\"User Interactivity\":1,\"Parallelization\":1},\"BroadCastWorkaround\":{\"instances\":[],\"count\":0},\"Unreachable Code\":{\"instances\":[],\"count\":0},\"spriteCount\":2,\"_id\":1234,\"scriptCount\":3,\"Too Long Script\":{\"instances\":[],\"count\":0},\"Too Broad Variable Scope\":{\"instances\":[],\"count\":0}}";
+		String reportRecord1 = "1234\t{\"smells\":{}, \"metrics\":{\"Mastery Level\":{}}, \"_id\":1234}";
 		AnalysisResultReader.processLine(manager, reportRecord1);
 		assertNull(manager.findCreatorRecord("creator1"));
 		
@@ -80,12 +80,45 @@ public class AnalysisResultReaderTest {
 		doc2.append("creator", "creator1");
 		doc2.append("original", 5678);
 		manager.putMetadata(doc2);
-		String reportRecord2 = "5678\t{\"Uncommunicative Naming\":{\"instances\":[],\"count\":0},\"Unnecessary Broadcast\":{\"instances\":[],\"count\":0},\"Duplicate Code\":{\"instances\":[],\"count\":0},\"Mastery Level\":{\"FlowControl\":2,\"abstraction\":1,\"DataRepresentation\":1,\"Synchronization\":3,\"Logic\":0,\"User Interactivity\":1,\"Parallelization\":1},\"BroadCastWorkaround\":{\"instances\":[],\"count\":0},\"Unreachable Code\":{\"instances\":[],\"count\":0},\"spriteCount\":2,\"_id\":5678,\"scriptCount\":3,\"Too Long Script\":{\"instances\":[],\"count\":0},\"Too Broad Variable Scope\":{\"instances\":[],\"count\":0}}";
+		String reportRecord2 = "5678\t{\"smells\":{}, \"metrics\":{\"Mastery Level\":{}}, \"_id\":5678}";
 		AnalysisResultReader.processLine(manager, reportRecord2);
 		assertNotNull(manager.findCreatorRecord("creator1"));
-		
-		
 	}
+	
+	@Test
+	public void testReader() throws Exception{
+		Crawler crawler = new Crawler();
+		int[] projectIDs = {105292497,104088578,100289065};
+		for(int id: projectIDs){
+			ProjectMetadata metadata = crawler.retrieveProjectMetadata(new ProjectMetadata(id));
+			manager.putMetadata(metadata.toDocument());
+		}
+		String lines = analysisReportGenerator(projectIDs);
+		for(String line : lines.split("\n")){
+			AnalysisResultReader.processLine(manager, line);
+		}
+		assertEquals(projectIDs.length, manager.getMetricsSize());
+		assertEquals(projectIDs.length, manager.getReportSize());
+		assertEquals(2, manager.getCreatorsSize()); //one project is not original
+	}
+	
+	public String analysisReportGenerator(int[] projectIDs) throws Exception{
+		Crawler crawler = new Crawler();
+		AnalysisManager blockAnalyzer = new AnalysisManager();
+		StringBuilder sb = new StringBuilder();
+		for(int id: projectIDs){
+			String src = crawler.retrieveProjectSourceFromProjectID(id);
+			JSONObject report = blockAnalyzer.analyze(src);
+			String result = report.toJSONString();
+			sb.append(id);
+			sb.append("\t");
+			sb.append(result);
+			sb.append("\n");
+		}
+		System.out.println(sb.toString());
+		return sb.toString();
+	}
+
 	
 
 }

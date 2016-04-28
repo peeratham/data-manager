@@ -38,6 +38,11 @@ public class DatasetCrawl2 implements Runnable {
 
 	public static void main(String[] args){
 		// config log4j
+		//set log directory
+		Properties props = System.getProperties();
+		if(props.getProperty("logDir")!=null){
+			props.setProperty("logDir", "./");
+		}
 		PropertyConfigurator.configure(DatasetCrawl2.class.getClassLoader().getResource("log4j.xml"));
 		
 		final Options options = createOptions();

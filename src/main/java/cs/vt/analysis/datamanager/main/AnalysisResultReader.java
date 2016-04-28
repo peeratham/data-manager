@@ -44,7 +44,7 @@ public class AnalysisResultReader {
 //				manager = new AnalysisDBManager(host);
 //			}
 			 
-			processAnalysisResultFiles(manager);
+//			processAnalysisResultFiles(manager);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -72,20 +72,20 @@ public class AnalysisResultReader {
 		return resultDirectory.isDirectory();
 	}
 
-	public static ArrayList<File> processAnalysisResultFiles(
-			AnalysisDBManager dbManager) {
-		ArrayList<File> list = new ArrayList<File>();
-		for (File part : resultDirectory.listFiles()) {
-			if (part.getName().contains("part")) {
-				try {
-					parseAndSaveResultToDatabase(dbManager, part);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return list;
-	}
+//	public static ArrayList<File> processAnalysisResultFiles(
+//			AnalysisDBManager dbManager) {
+//		ArrayList<File> list = new ArrayList<File>();
+//		for (File part : resultDirectory.listFiles()) {
+//			if (part.getName().contains("part")) {
+//				try {
+//					parseAndSaveResultToDatabase(dbManager, part);
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+//		return list;
+//	}
 
 	private static void parseAndSaveResultToDatabase(
 			AnalysisDBManager dbManager, File part) throws IOException {
@@ -115,23 +115,32 @@ public class AnalysisResultReader {
 		int projectID = Integer.parseInt(lineRecord[0]);
 		try {
 			Document fullReportDoc = Document.parse(lineRecord[1]);
-			dbManager.putAnalysisReport(projectID, fullReportDoc);
 			String creatorName = dbManager.lookUpCreator(projectID);
-			if(fullReportDoc.containsKey("Mastery Level") && creatorName!=null){
-				Document masteryReport = (Document) fullReportDoc.get("Mastery Level");
-				Creator creator = new Creator(creatorName);
-				creator.addProjectID(projectID);
-				creator.setMasteryReport(masteryReport);
-				//check if project is original
-				Document metadata = dbManager.findMetadata(projectID);
-				if(metadata!=null){
-					if(metadata.get("_id").equals(metadata.get("original"))){
-						dbManager.putCreatorRecord(creator.toDocument());
-					}
-				}
+			Document smells = (Document) fullReportDoc.get("smells");
+			dbManager.putAnalysisReport(projectID, smells);
+			
+			Document metrics = (Document) fullReportDoc.get("metrics");
+			if(metrics.containsKey("Mastery Level") && creatorName!=null){
+				processCreatorRecord(dbManager, projectID, creatorName, metrics);
 			}
+			dbManager.putMetricsReport(projectID, metrics);
 		} catch (Exception e) {
 			throw new Exception("Error reading project: " + projectID);
+		}
+	}
+
+	private static void processCreatorRecord(AnalysisDBManager dbManager, int projectID, String creatorName,
+			Document metrics) {
+		Document masteryReport = (Document) metrics.get("Mastery Level");
+		Creator creator = new Creator(creatorName);
+		creator.addProjectID(projectID);
+		creator.setMasteryReport(masteryReport);
+		//check if project is original
+		Document metadata = dbManager.findMetadata(projectID);
+		if(metadata!=null){
+			if(metadata.get("_id").equals(metadata.get("original"))){
+				dbManager.putCreatorRecord(creator.toDocument());
+			}
 		}
 	}
 
