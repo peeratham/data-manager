@@ -69,6 +69,7 @@ public class AnalysisResultReaderTest {
 		String reportRecord1 = "1234\t{\"smells\":{}, \"metrics\":{\"Mastery Level\":{}}, \"_id\":1234}";
 		AnalysisResultReader.processLine(manager, reportRecord1);
 		assertNull(manager.findCreatorRecord("creator1"));
+		assertNotNull(manager.findMetricsReport(1234));
 		
 		Document doc2 = new Document();
 		doc2.append("_id", 5678);
@@ -78,6 +79,7 @@ public class AnalysisResultReaderTest {
 		String reportRecord2 = "5678\t{\"smells\":{}, \"metrics\":{\"Mastery Level\":{}}, \"_id\":5678}";
 		AnalysisResultReader.processLine(manager, reportRecord2);
 		assertNotNull(manager.findCreatorRecord("creator1"));
+		assertNotNull(manager.findMetricsReport(5678));
 	}
 	
 	@Test

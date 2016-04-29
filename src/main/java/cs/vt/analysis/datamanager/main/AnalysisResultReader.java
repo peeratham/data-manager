@@ -36,13 +36,6 @@ public class AnalysisResultReader {
 			String host = line.getOptionValue("h");
 			String databaseName = line.getOptionValue("db");
 			manager = new AnalysisDBManager(host, databaseName);
-//			if (host==null){
-//				manager = new AnalysisDBManager();
-//			}else{
-//				manager = new AnalysisDBManager(host);
-//			}
-			 
-//			processAnalysisResultFiles(manager);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -70,21 +63,6 @@ public class AnalysisResultReader {
 		return resultDirectory.isDirectory();
 	}
 
-//	public static ArrayList<File> processAnalysisResultFiles(
-//			AnalysisDBManager dbManager) {
-//		ArrayList<File> list = new ArrayList<File>();
-//		for (File part : resultDirectory.listFiles()) {
-//			if (part.getName().contains("part")) {
-//				try {
-//					parseAndSaveResultToDatabase(dbManager, part);
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//		}
-//		return list;
-//	}
-
 	private static void parseAndSaveResultToDatabase(
 			AnalysisDBManager dbManager, File part) throws IOException {
 		ArrayList<JSONObject> reports = new ArrayList<JSONObject>();
@@ -102,10 +80,6 @@ public class AnalysisResultReader {
 			DecimalFormat df = new DecimalFormat(".##");
 			System.out.print("\r"+df.format(percent*100)+"%");
 		}
-//		lines.forEach((line) -> {
-//			processLine(dbManager, line);
-//		});
-
 	}
 
 	public static void processLine(AnalysisDBManager dbManager, String line) throws Exception {
@@ -124,6 +98,7 @@ public class AnalysisResultReader {
 			
 			dbManager.putMetricsReport(projectID, metrics);
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new Exception("Error reading project: " + projectID);
 		}
 	}

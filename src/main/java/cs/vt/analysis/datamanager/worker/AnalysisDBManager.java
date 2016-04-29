@@ -66,7 +66,7 @@ public class AnalysisDBManager {
 	}
 	
 	public Document findMetricsReport(int projectID){
-		FindIterable<Document> iterable = db.getCollection(REPORT_COLLECTION_NAME).find(eq("_id", projectID));
+		FindIterable<Document> iterable = db.getCollection(METRICS_COLLECTION_NAME).find(eq("_id", projectID));
 		if(iterable==null){
 			return null;
 		}else{
