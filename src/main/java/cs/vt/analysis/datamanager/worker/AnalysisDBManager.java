@@ -120,7 +120,7 @@ public class AnalysisDBManager {
 	}
 	
 	public void putCreatorRecord(Document creatorDoc){
-		String creatorName = (String) creatorDoc.get("creator");
+		String creatorName = (String) creatorDoc.get("_id");
 		Document matchedRecord = findCreatorRecord(creatorName);
 		if(matchedRecord == null){
 			db.getCollection(CREATOR_COLLECTION_NAME).insertOne(creatorDoc);

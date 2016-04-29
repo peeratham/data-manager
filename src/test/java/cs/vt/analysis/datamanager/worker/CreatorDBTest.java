@@ -61,5 +61,17 @@ public class CreatorDBTest {
 		manager.deleteCreator("userName");
 		
 	}
+	
+	@Test
+	public void testInsertSameCreatorShouldUpdate(){
+		Creator creator1 = new Creator("a");
+		int project1 = 1234;
+		creator1.addProjectID(project1);
+		String masteryInput1 = "{ \"FlowControl\" : 2, \"abstraction\" : 1, \"DataRepresentation\" : 2, \"Synchronization\" : 2, \"Logic\" : 3, \"User Interactivity\" : 1, \"Parallelization\" : 1 }";
+		Document masteryReport1 = Document.parse(masteryInput1);
+		creator1.setMasteryReport(masteryReport1);
+		manager.putCreatorRecord(creator1.toDocument());
+		manager.putCreatorRecord(creator1.toDocument());
+	}
 
 }
