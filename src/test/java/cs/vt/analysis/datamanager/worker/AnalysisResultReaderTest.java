@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import cs.vt.analysis.analyzer.AnalysisManager;
-import cs.vt.analysis.analyzer.analysis.TestUtils;
 import cs.vt.analysis.datamanager.crawler.Crawler;
 import cs.vt.analysis.datamanager.crawler.ProjectMetadata;
 import cs.vt.analysis.datamanager.main.AnalysisResultReader;
