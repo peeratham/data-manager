@@ -36,10 +36,26 @@ public class AnalysisResultReader {
 			String host = line.getOptionValue("h");
 			String databaseName = line.getOptionValue("db");
 			manager = new AnalysisDBManager(host, databaseName);
+			processAnalysisResultFiles(manager);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
+	}
+	
+	public static ArrayList<File> processAnalysisResultFiles(
+			AnalysisDBManager dbManager) {
+		ArrayList<File> list = new ArrayList<File>();
+		for (File part : resultDirectory.listFiles()) {
+			if (part.getName().contains("part")) {
+				try {
+					parseAndSaveResultToDatabase(dbManager, part);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		return list;
 	}
 
 	private static CommandLine getCommandLine(Options options, String[] args)
