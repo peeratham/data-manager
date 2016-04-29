@@ -1,6 +1,5 @@
 package cs.vt.analysis.datamanager.worker;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
@@ -13,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import cs.vt.analysis.analyzer.AnalysisManager;
+import cs.vt.analysis.analyzer.analysis.TestUtils;
 import cs.vt.analysis.datamanager.crawler.Crawler;
 import cs.vt.analysis.datamanager.crawler.ProjectMetadata;
 import cs.vt.analysis.datamanager.main.AnalysisResultReader;
@@ -90,28 +90,11 @@ public class AnalysisResultReaderTest {
 			ProjectMetadata metadata = crawler.retrieveProjectMetadata(new ProjectMetadata(id));
 			manager.putMetadata(metadata.toDocument());
 		}
-		String lines = analysisReportGenerator(projectIDs);
+		String lines = AnalysisManager.analysisReportGenerator(projectIDs);
 		for(String line : lines.split("\n")){
 			AnalysisResultReader.processLine(manager, line);
 		}
 		
-	}
-	
-	public String analysisReportGenerator(int[] projectIDs) throws Exception{
-		Crawler crawler = new Crawler();
-		AnalysisManager blockAnalyzer = new AnalysisManager();
-		StringBuilder sb = new StringBuilder();
-		for(int id: projectIDs){
-			String src = crawler.retrieveProjectSourceFromProjectID(id);
-			JSONObject report = blockAnalyzer.analyze(src);
-			String result = report.toJSONString();
-			sb.append(id);
-			sb.append("\t");
-			sb.append(result);
-			sb.append("\n");
-		}
-		System.out.println(sb.toString());
-		return sb.toString();
 	}
 
 	
