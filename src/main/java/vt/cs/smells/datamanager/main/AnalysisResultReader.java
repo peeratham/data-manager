@@ -1,4 +1,4 @@
-package cs.vt.analysis.datamanager.main;
+package vt.cs.smells.datamanager.main;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,8 +17,8 @@ import org.apache.commons.io.IOUtils;
 import org.bson.Document;
 import org.json.simple.JSONObject;
 
-import cs.vt.analysis.datamanager.crawler.Creator;
-import cs.vt.analysis.datamanager.worker.AnalysisDBManager;
+import vt.cs.smells.datamanager.crawler.Creator;
+import vt.cs.smells.datamanager.worker.AnalysisDBManager;
 
 public class AnalysisResultReader {
 	private static File resultDirectory;

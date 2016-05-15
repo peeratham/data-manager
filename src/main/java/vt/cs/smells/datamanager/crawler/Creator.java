@@ -1,4 +1,4 @@
-package cs.vt.analysis.datamanager.crawler;
+package vt.cs.smells.datamanager.crawler;
 
 import java.util.ArrayList;
 

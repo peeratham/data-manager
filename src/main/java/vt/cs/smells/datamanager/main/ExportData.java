@@ -1,11 +1,11 @@
-package cs.vt.analysis.datamanager.main;
+package vt.cs.smells.datamanager.main;
 
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.Options;
 
-import cs.vt.analysis.datamanager.worker.AnalysisDBManager;
+import vt.cs.smells.datamanager.worker.AnalysisDBManager;
 
 public class ExportData {
 	private static AnalysisDBManager manager;

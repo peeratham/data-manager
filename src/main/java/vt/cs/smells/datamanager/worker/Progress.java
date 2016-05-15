@@ -1,4 +1,4 @@
-package cs.vt.analysis.datamanager.worker;
+package vt.cs.smells.datamanager.worker;
 
 import java.text.DecimalFormat;
 

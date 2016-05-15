@@ -1,4 +1,4 @@
-package cs.vt.analysis.datamanager.worker;
+package vt.cs.smells.datamanager.worker;
 
 import static org.junit.Assert.*;
 
@@ -6,6 +6,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import vt.cs.smells.datamanager.worker.AnalysisDBManager;
 
 public class TestSourceExport {
 

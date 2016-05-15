@@ -1,4 +1,4 @@
-package cs.vt.analysis.datamanager.crawler;
+package vt.cs.smells.datamanager.crawler;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
@@ -21,7 +21,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import cs.vt.analysis.datamanager.worker.Progress;
+import vt.cs.smells.datamanager.worker.Progress;
 
 public class Crawler {
 

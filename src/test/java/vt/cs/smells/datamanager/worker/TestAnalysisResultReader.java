@@ -1,4 +1,4 @@
-package cs.vt.analysis.datamanager.worker;
+package vt.cs.smells.datamanager.worker;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -11,12 +11,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import cs.vt.analysis.analyzer.AnalysisManager;
-import cs.vt.analysis.datamanager.crawler.Crawler;
-import cs.vt.analysis.datamanager.crawler.ProjectMetadata;
-import cs.vt.analysis.datamanager.main.AnalysisResultReader;
+import vt.cs.smells.analyzer.AnalysisManager;
+import vt.cs.smells.datamanager.crawler.Crawler;
+import vt.cs.smells.datamanager.crawler.ProjectMetadata;
+import vt.cs.smells.datamanager.main.AnalysisResultReader;
+import vt.cs.smells.datamanager.worker.AnalysisDBManager;
 
-public class AnalysisResultReaderTest {
+public class TestAnalysisResultReader {
 
 	private String dir;
 	private AnalysisDBManager manager;
@@ -25,7 +26,7 @@ public class AnalysisResultReaderTest {
 	public void setUp() throws Exception {
 		Properties props = System.getProperties();
 		props.setProperty("logDir", "./");
-		dir = AnalysisResultReaderTest.class.getClassLoader().getResource("test-output").getPath();
+		dir = TestAnalysisResultReader.class.getClassLoader().getResource("test-output").getPath();
 		manager = AnalysisDBManager.getTestAnalysisDBManager();
 	}
 

@@ -1,4 +1,4 @@
-package cs.vt.analysis.datamanager.crawler;
+package vt.cs.smells.datamanager.crawler;
 
 import static org.junit.Assert.*;
 
@@ -9,7 +9,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class CrawlerTest {
+import vt.cs.smells.datamanager.crawler.Crawler;
+import vt.cs.smells.datamanager.crawler.ProjectMetadata;
+
+public class TestCrawler {
 	Crawler crawler;
 
 	@Before

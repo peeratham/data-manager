@@ -1,4 +1,4 @@
-package cs.vt.analysis.datamanager.worker;
+package vt.cs.smells.datamanager.worker;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -7,9 +7,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import cs.vt.analysis.datamanager.crawler.Creator;
+import vt.cs.smells.datamanager.crawler.Creator;
+import vt.cs.smells.datamanager.worker.AnalysisDBManager;
 
-public class CreatorDBTest {
+public class TestCreatorDB {
 
 	private AnalysisDBManager manager;
 

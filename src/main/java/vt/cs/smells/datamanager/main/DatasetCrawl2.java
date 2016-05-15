@@ -1,4 +1,4 @@
-package cs.vt.analysis.datamanager.main;
+package vt.cs.smells.datamanager.main;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -15,10 +15,10 @@ import org.apache.log4j.PropertyConfigurator;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import cs.vt.analysis.datamanager.crawler.Crawler;
-import cs.vt.analysis.datamanager.crawler.ProjectMetadata;
-import cs.vt.analysis.datamanager.worker.AnalysisDBManager;
-import cs.vt.analysis.datamanager.worker.Progress;
+import vt.cs.smells.datamanager.crawler.Crawler;
+import vt.cs.smells.datamanager.crawler.ProjectMetadata;
+import vt.cs.smells.datamanager.worker.AnalysisDBManager;
+import vt.cs.smells.datamanager.worker.Progress;
 
 public class DatasetCrawl2 implements Runnable {
 	
