@@ -17,14 +17,14 @@ import org.json.simple.parser.JSONParser;
 import org.jsoup.Connection.Response;
 import org.jsoup.HttpStatusException;
 import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.bson.Document;
 
 import vt.cs.smells.datamanager.worker.Progress;
 
 public class Crawler {
-
+	public static final String baseURL2 = "https://api.scratch.mit.edu/search/projects?limit=16&offset=%1$d&language=en&q=*";
 	public static final String baseURL = "https://scratch.mit.edu/site-api/explore/more/projects/all/%1$d";
 	public static final String baseDownLoadURL = "http://projects.scratch.mit.edu/internalapi/project/%1$d/get/";
 	private static final String pageURL = "https://scratch.mit.edu/projects/%1$d";
@@ -35,10 +35,10 @@ public class Crawler {
 	private ArrayList<ProjectMetadata> result = new ArrayList<ProjectMetadata>();
 	private double percentCompletion = 0;
 	private Thread statusUpdateThread;
-	
-	Runnable updateProjectListingStatus = () -> { 
-		while(result.size() < numProjectToCollect){
-			percentCompletion = ((double)result.size()/(double)(numProjectToCollect ))*100;
+
+	Runnable updateProjectListingStatus = () -> {
+		while (result.size() < numProjectToCollect) {
+			percentCompletion = ((double) result.size() / (double) (numProjectToCollect)) * 100;
 			try {
 				Progress.updateProgress(percentCompletion);
 				Thread.sleep(2000);
@@ -46,17 +46,16 @@ public class Crawler {
 				break;
 			}
 		}
-		
-		percentCompletion = ((double)result.size()/(double)(numProjectToCollect))*100;
+
+		percentCompletion = ((double) result.size() / (double) (numProjectToCollect)) * 100;
 		Progress.updateProgress(percentCompletion);
-		logger.info("\nTotal Project IDs Retrieved: "+result.size());
+		logger.info("\nTotal Project IDs Retrieved: " + result.size());
 		Thread.currentThread().interrupt();
 	};
-	
-	
-	public Crawler(){
-		statusUpdateThread = new Thread(updateProjectListingStatus);
-		statusUpdateThread.start();
+
+	public Crawler() {
+		 statusUpdateThread = new Thread(updateProjectListingStatus);
+		 statusUpdateThread.start();
 	}
 
 	public void setNumberOfProjectToCollect(int num) {
@@ -64,22 +63,37 @@ public class Crawler {
 	}
 
 	public List<ProjectMetadata> getProjectsFromQuery() {
-		int listingIndex = 1;
-
+		int offset = 0;
 		while (result.size() < numProjectToCollect) {
-//			logger.info("crawling @ listingIndex:" + listingIndex);
-			String URL = String.format(baseURL, listingIndex);
-			RetryOnException retry = new RetryOnException(3 , 2000);
+			String URL = String.format(baseURL2, offset);
+			RetryOnException retry = new RetryOnException(3, 2000);
 			while (retry.shouldRetry()) {
 				try {
 					String doc = Jsoup.connect(URL).ignoreContentType(true)
 							.execute().body();
 					JSONArray projectListing = (JSONArray) parser.parse(doc);
+
 					for (int i = 0; i < projectListing.size(); i++) {
 						JSONObject obj = (JSONObject) projectListing.get(i);
-						JSONObject fields = (JSONObject) obj.get("fields");
-						Integer projectID = ((Long) obj.get("pk")).intValue();
-						String title = (String) fields.get("title");
+						Document document = Document.parse(obj.toJSONString());
+						Integer projectID = document.getInteger("id");
+						String title = document.getString("title");
+						Document remixDoc = (Document) document.get("remix");
+						if (remixDoc.getInteger("root") == null) {
+//							System.out.println("original project");
+						}
+
+						Document historyDoc = (Document) document
+								.get("history");
+						String created = historyDoc.getString("created");
+						String modified = historyDoc.getString("modified");
+						String shared = historyDoc.getString("shared");
+
+						Document statsDoc = (Document) document.get("stats");
+						Integer views = statsDoc.getInteger("views");
+						Integer loves = statsDoc.getInteger("loves");
+						Integer favorites = statsDoc.getInteger("favorites");
+
 						ProjectMetadata proj = new ProjectMetadata(projectID);
 						proj.setTitle(title);
 						result.add(proj);
@@ -92,21 +106,22 @@ public class Crawler {
 					try {
 						retry.errorOccured();
 					} catch (Exception failAttemptException) {
-						logger.error("Skipped crawling for listing @ "
-								+ listingIndex);
+						logger.error("Skipped crawling for listing @ offset "
+								+ offset);
 						logger.error("Exception while calling URL:" + URL);
 						break;
 
 					}
 				}
+				offset += 16;
 			}
-
-			listingIndex++;
 		}
+		
 		statusUpdateThread.interrupt();
-
 		return result;
 	}
+
+	
 
 	public int getNumberOfProjectToCollect() {
 		return numProjectToCollect;
@@ -114,8 +129,8 @@ public class Crawler {
 
 	public ProjectMetadata retrieveProjectMetadata(ProjectMetadata metadata)
 			throws Exception {
-		RetryOnException retry = new RetryOnException(3 , 2000);
-		Document doc = null;
+		RetryOnException retry = new RetryOnException(3, 2000);
+		org.jsoup.nodes.Document doc = null;
 		String projectPageURL = String.format(pageURL, metadata.getProjectID());
 		while (retry.shouldRetry()) {
 			try {
@@ -125,16 +140,18 @@ public class Crawler {
 				try {
 					retry.errorOccured();
 				} catch (Exception failAttemptException) {
-//					throw new RuntimeException("Exception while calling URL:"
-//							+ projectPageURL, failAttemptException);
-//					logger.error("Error retrieving metadata for project: "+ metadata.getProjectID() + "...skipping..." );
+					// throw new RuntimeException("Exception while calling URL:"
+					// + projectPageURL, failAttemptException);
+					// logger.error("Error retrieving metadata for project: "+
+					// metadata.getProjectID() + "...skipping..." );
 					return null;
 				}
 			}
 		}
 
 		if (doc == null) {
-//			throw new Exception("Fail to retrieve project at:" + projectPageURL);
+			// throw new Exception("Fail to retrieve project at:" +
+			// projectPageURL);
 		}
 
 		Elements favCntSpan = doc.select("span[data-content=\"fav-count\"]");
@@ -177,28 +194,27 @@ public class Crawler {
 				dateSharedStr.length()).trim();
 		Date dateShared = formatter.parse(dateSharedStr);
 		metadata.setDateShared(dateShared);
-		
-		
-		//get original
-		//if project itself is original ;set itself original
-		Element originalProjectLink= doc.select("#remix-history ul li div span a").first();
-		if(originalProjectLink!=null){
+
+		// get original
+		// if project itself is original ;set itself original
+		Element originalProjectLink = doc.select(
+				"#remix-history ul li div span a").first();
+		if (originalProjectLink != null) {
 			String originalProjectID = originalProjectLink.attr("href");
 			int origin = extractOriginalProjectIDFromURLString(originalProjectID);
 			metadata.setOriginalProject(origin);
-		}else{
+		} else {
 			metadata.setOriginalProject(metadata.getProjectID());
 		}
-		
-		
 
 		return metadata;
 	}
 
 	private int extractOriginalProjectIDFromURLString(String originalProjectID) {
 		int secondSlash = originalProjectID.indexOf('/', 1);
-		int lastSlash = originalProjectID.indexOf('/', secondSlash+1);
-		String projectID = originalProjectID.substring(secondSlash+1, lastSlash);
+		int lastSlash = originalProjectID.indexOf('/', secondSlash + 1);
+		String projectID = originalProjectID.substring(secondSlash + 1,
+				lastSlash);
 		return Integer.parseInt(projectID);
 	}
 
@@ -218,7 +234,7 @@ public class Crawler {
 	public String retrieveProjectSourceFromProjectID(int projectID)
 			throws Exception {
 		String projectSrcURL = String.format(baseDownLoadURL, projectID);
-		RetryOnException retry = new RetryOnException(3 , 2000);
+		RetryOnException retry = new RetryOnException(3, 2000);
 		String src = null;
 		while (retry.shouldRetry()) {
 			try {
@@ -229,16 +245,17 @@ public class Crawler {
 				try {
 					retry.errorOccured();
 				} catch (Exception failAttemptException) {
-//					throw new RuntimeException("Exception while calling URL:"
-//							+ projectSrcURL, failAttemptException);
-					logger.error("fail to retrieve source for: "+projectID+"...skipping..." );
+					// throw new RuntimeException("Exception while calling URL:"
+					// + projectSrcURL, failAttemptException);
+					logger.error("fail to retrieve source for: " + projectID
+							+ "...skipping...");
 				}
 			}
 		}
 
-//		if (src == null) {
-//			throw new Exception("Fail to retrieve project at:" + projectSrcURL);
-//		}
+		// if (src == null) {
+		// throw new Exception("Fail to retrieve project at:" + projectSrcURL);
+		// }
 
 		return src;
 	}
@@ -247,32 +264,32 @@ public class Crawler {
 		String projectSrcURL = String.format(baseDownLoadURL, projectID);
 		Response con = null;
 		RetryOnException timeOutHandler = new RetryOnException();
-		
+
 		while (timeOutHandler.shouldRetry()) {
 			try {
-				con = Jsoup.connect(projectSrcURL).ignoreContentType(true).execute();
-				System.out.println(projectID+": exists");
+				con = Jsoup.connect(projectSrcURL).ignoreContentType(true)
+						.execute();
+				System.out.println(projectID + ": exists");
 				return true;
 			} catch (HttpStatusException e) {
-//				System.err.println(projectID+": "+e.getStatusCode());
+				// System.err.println(projectID+": "+e.getStatusCode());
 				return false;
-			} catch (SocketTimeoutException e){
-//				System.err.println("checking: "+projectID);
+			} catch (SocketTimeoutException e) {
+				// System.err.println("checking: "+projectID);
 				try {
 					timeOutHandler.errorOccured();
 				} catch (Exception failAttemptException) {
-					return false; //exceed allowed number of tries
+					return false; // exceed allowed number of tries
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 				return false;
 			}
-			
+
 		}
-		
+
 		return true;
 
-		
 	}
 
 }

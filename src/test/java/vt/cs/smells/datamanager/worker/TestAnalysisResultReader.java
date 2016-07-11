@@ -52,8 +52,8 @@ public class TestAnalysisResultReader {
 		assertNotNull(manager.findMetadata(projectID));
 
 		AnalysisManager blockAnalyzer = new AnalysisManager();
-		JSONObject result = blockAnalyzer.analyze(src);
-
+		blockAnalyzer.analyze(src);
+		JSONObject result = blockAnalyzer.getFullJSONReport();
 		String line = projectID + "\t" + result.toJSONString();
 		AnalysisResultReader.processLine(manager, line);
 		assertNotNull(manager.findAnalysisReport(projectID));
