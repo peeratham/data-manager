@@ -22,7 +22,7 @@ import vt.cs.smells.datamanager.worker.Progress;
 
 public class DatasetCrawl2 implements Runnable {
 	
-	private static int numOfProjects=3000;
+	private static int numOfProjects=500;
 	public static String configurationFilePath = "";
 	private static String databaseName = "test";
 	private static AnalysisDBManager DBManager;
@@ -70,7 +70,7 @@ public class DatasetCrawl2 implements Runnable {
 			logger.info("Number of Projects to Collect: "+numOfProjects);
 			
 			List<ProjectMetadata> projectMetadataListing = crawler.getProjectsFromQuery();
-			
+			System.out.println(projectMetadataListing.size());
 			JSONParser parser = new JSONParser();
 			
 			srcRetrievalStatusThread.start();

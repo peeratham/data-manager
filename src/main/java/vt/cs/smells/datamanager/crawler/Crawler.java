@@ -5,8 +5,10 @@ import java.net.SocketTimeoutException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -24,8 +26,7 @@ import org.bson.Document;
 import vt.cs.smells.datamanager.worker.Progress;
 
 public class Crawler {
-	public static final String baseURL2 = "https://api.scratch.mit.edu/search/projects?limit=16&offset=%1$d&language=en&q=*";
-	public static final String baseURL = "https://scratch.mit.edu/site-api/explore/more/projects/all/%1$d";
+	public static final String baseURL = "https://api.scratch.mit.edu/search/projects?limit=16&offset=%1$d&language=en&q=*";
 	public static final String baseDownLoadURL = "http://projects.scratch.mit.edu/internalapi/project/%1$d/get/";
 	private static final String pageURL = "https://scratch.mit.edu/projects/%1$d";
 	static Logger logger = Logger.getLogger(Crawler.class);
@@ -64,8 +65,9 @@ public class Crawler {
 
 	public List<ProjectMetadata> getProjectsFromQuery() {
 		int offset = 0;
+		Set<Integer> projectIDs = new HashSet<>();
 		while (result.size() < numProjectToCollect) {
-			String URL = String.format(baseURL2, offset);
+			String URL = String.format(baseURL, offset);
 			RetryOnException retry = new RetryOnException(3, 2000);
 			while (retry.shouldRetry()) {
 				try {
@@ -77,6 +79,12 @@ public class Crawler {
 						JSONObject obj = (JSONObject) projectListing.get(i);
 						Document document = Document.parse(obj.toJSONString());
 						Integer projectID = document.getInteger("id");
+						
+						if(projectIDs.contains(projectID)){
+							continue;
+						}else{
+							projectIDs.add(projectID);
+						}
 						String title = document.getString("title");
 						Document remixDoc = (Document) document.get("remix");
 						if (remixDoc.getInteger("root") == null) {
@@ -113,8 +121,8 @@ public class Crawler {
 
 					}
 				}
-				offset += 16;
 			}
+			offset += 16;
 		}
 		
 		statusUpdateThread.interrupt();

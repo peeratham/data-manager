@@ -84,8 +84,9 @@ public class TestCrawler {
 	@Test
 	public void testProjectListingCrawl() {
 		Crawler crawler = new Crawler();
-		crawler.setNumberOfProjectToCollect(5);
+		crawler.setNumberOfProjectToCollect(200);
 		List<ProjectMetadata> projectMetadataListing = crawler.getProjectsFromQuery();
+		assertEquals(200, projectMetadataListing.size());
 	}
 
 }
