@@ -74,5 +74,17 @@ public class TestCreatorDB {
 		manager.putCreatorRecord(creator1.toDocument());
 		manager.putCreatorRecord(creator1.toDocument());
 	}
+	
+	@Test
+	public void testInsertConciseReport(){
+		Creator creator1 = new Creator("a");
+		int project1 = 1234;
+		creator1.addProjectID(project1);
+		String masteryInput1 = "{\"total\":14}";
+		Document masteryReport1 = Document.parse(masteryInput1);
+		creator1.setMasteryReport(masteryReport1);
+		manager.putCreatorRecord(creator1.toDocument());
+		manager.putCreatorRecord(creator1.toDocument());
+	}
 
 }

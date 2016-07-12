@@ -21,7 +21,7 @@ import vt.cs.smells.datamanager.crawler.Creator;
 import vt.cs.smells.datamanager.worker.AnalysisDBManager;
 
 public class AnalysisResultReader {
-	private static File resultDirectory;
+	public static File resultDirectory;
 
 	public static void main(String[] args) {
 		final Options options = createOptions();
@@ -108,7 +108,8 @@ public class AnalysisResultReader {
 			dbManager.putAnalysisReport(projectID, smells);
 			
 			Document metrics = (Document) fullReportDoc.get("metrics");
-			if(metrics.containsKey("Mastery Level") && creatorName!=null){
+			boolean containsMasteryMetric = metrics.containsKey("Mastery Level") || metrics.containsKey("MS");
+			if(containsMasteryMetric && creatorName!=null){
 				processCreatorRecord(dbManager, projectID, creatorName, metrics);
 			}
 			
@@ -122,6 +123,9 @@ public class AnalysisResultReader {
 	private static void processCreatorRecord(AnalysisDBManager dbManager, int projectID, String creatorName,
 			Document metrics) {
 		Document masteryReport = (Document) metrics.get("Mastery Level");
+		if(masteryReport==null){
+			masteryReport = (Document) metrics.get("MS");
+		}
 		Creator creator = new Creator(creatorName);
 		creator.addProjectID(projectID);
 		creator.setMasteryReport(masteryReport);
