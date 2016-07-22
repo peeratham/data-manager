@@ -84,9 +84,13 @@ public class DatasetCrawl2 implements Runnable {
 				try {
 					current = crawler.retrieveProjectMetadata(current);
 					if(current!=null){
-					String src = crawler.retrieveProjectSourceFromProjectID(current.getProjectID());
-						String singleLineJSONSrc = ((JSONObject) parser.parse(src)).toJSONString();
-						DBManager.putSource(current.getProjectID(), singleLineJSONSrc);
+						String src = crawler
+								.retrieveProjectSourceFromProjectID(current
+										.getProjectID());
+						String singleLineJSONSrc = ((JSONObject) parser
+								.parse(src)).toJSONString();
+						DBManager.putSource(current.getProjectID(),
+								singleLineJSONSrc);
 						DBManager.putMetadata(current.toDocument());
 						downloadedProjects++;
 						newProjectCounter ++;

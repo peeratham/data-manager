@@ -135,7 +135,7 @@ public class Crawler {
 		return numProjectToCollect;
 	}
 
-	public ProjectMetadata retrieveProjectMetadata(ProjectMetadata metadata)
+	public static ProjectMetadata retrieveProjectMetadata(ProjectMetadata metadata)
 			throws Exception {
 		RetryOnException retry = new RetryOnException(3, 2000);
 		org.jsoup.nodes.Document doc = null;
@@ -160,6 +160,13 @@ public class Crawler {
 		if (doc == null) {
 			// throw new Exception("Fail to retrieve project at:" +
 			// projectPageURL);
+		}
+		
+		//shared?
+//		#share-bar > span
+		Elements shareBar = doc.select("div#share-bar");
+		if(shareBar.hasText()){
+			throw new Exception("Not shared");
 		}
 
 		Elements favCntSpan = doc.select("span[data-content=\"fav-count\"]");
@@ -218,7 +225,7 @@ public class Crawler {
 		return metadata;
 	}
 
-	private int extractOriginalProjectIDFromURLString(String originalProjectID) {
+	private static int extractOriginalProjectIDFromURLString(String originalProjectID) {
 		int secondSlash = originalProjectID.indexOf('/', 1);
 		int lastSlash = originalProjectID.indexOf('/', secondSlash + 1);
 		String projectID = originalProjectID.substring(secondSlash + 1,
@@ -239,7 +246,7 @@ public class Crawler {
 		return result;
 	}
 
-	public String retrieveProjectSourceFromProjectID(int projectID)
+	public static String retrieveProjectSourceFromProjectID(int projectID)
 			throws Exception {
 		String projectSrcURL = String.format(baseDownLoadURL, projectID);
 		RetryOnException retry = new RetryOnException(3, 2000);
@@ -268,7 +275,7 @@ public class Crawler {
 		return src;
 	}
 
-	public boolean checkIfExists(int projectID) {
+	public static boolean checkIfExists(int projectID) {
 		String projectSrcURL = String.format(baseDownLoadURL, projectID);
 		Response con = null;
 		RetryOnException timeOutHandler = new RetryOnException();
@@ -277,7 +284,6 @@ public class Crawler {
 			try {
 				con = Jsoup.connect(projectSrcURL).ignoreContentType(true)
 						.execute();
-				System.out.println(projectID + ": exists");
 				return true;
 			} catch (HttpStatusException e) {
 				// System.err.println(projectID+": "+e.getStatusCode());
@@ -299,5 +305,5 @@ public class Crawler {
 		return true;
 
 	}
-
+	
 }
