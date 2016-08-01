@@ -62,7 +62,7 @@ public class DatasetCrawl2 implements Runnable {
 			Crawler crawler = new Crawler();
 			crawler.setNumberOfProjectToCollect(numOfProjects);
 			
-			DBManager = new AnalysisDBManager(host,databaseName);
+			setDatabase(host, databaseName);
 			
 			
 //			DBManager.setDBName(databaseName);
@@ -75,31 +75,8 @@ public class DatasetCrawl2 implements Runnable {
 			
 			srcRetrievalStatusThread.start();
 			startTime = System.nanoTime();
-			for (int i = 0; i < projectMetadataListing.size(); i++) {
-				ProjectMetadata current = projectMetadataListing.get(i);
-				if(DBManager.findMetadata(current.getProjectID()) != null){
-					downloadedProjects++;
-					continue;
-				}
-				try {
-					current = crawler.retrieveProjectMetadata(current);
-					if(current!=null){
-						String src = crawler
-								.retrieveProjectSourceFromProjectID(current
-										.getProjectID());
-						String singleLineJSONSrc = ((JSONObject) parser
-								.parse(src)).toJSONString();
-						DBManager.putSource(current.getProjectID(),
-								singleLineJSONSrc);
-						DBManager.putMetadata(current.toDocument());
-						downloadedProjects++;
-						newProjectCounter ++;
-					}
-				} catch (Exception e) {
-					failureCounter ++;
-					logger.error("ID:"+ current.getProjectID()+" - "+e);
-				}
-			}
+			retrieveProjectMetadataListing(crawler, projectMetadataListing,
+					parser);
 			endTime = System.nanoTime();
 			elapsedTime = endTime-startTime;
 			
@@ -120,6 +97,37 @@ public class DatasetCrawl2 implements Runnable {
 			srcRetrievalStatusThread.interrupt();
 			
 		}
+	}
+
+
+	public static void retrieveProjectMetadataListing(Crawler crawler,
+			List<ProjectMetadata> projectMetadataListing, JSONParser parser) {
+		for (int i = 0; i < projectMetadataListing.size(); i++) {
+			ProjectMetadata current = projectMetadataListing.get(i);
+			if(DBManager.findMetadata(current.getProjectID()) != null){
+				downloadedProjects++;
+				continue;
+			}
+			try {
+				current = crawler.retrieveProjectMetadata(current);
+				if(current!=null){
+					String src = crawler
+							.retrieveProjectSourceFromProjectID(current
+									.getProjectID());
+					String singleLineJSONSrc = ((JSONObject) parser
+							.parse(src)).toJSONString();
+					DBManager.putSource(current.getProjectID(),
+							singleLineJSONSrc);
+					DBManager.putMetadata(current.toDocument());
+					downloadedProjects++;
+					newProjectCounter ++;
+				}
+			} catch (Exception e) {
+				failureCounter ++;
+				logger.error("ID:"+ current.getProjectID()+" - "+e);
+			}
+		}
+		System.out.println("Retrieved:" + downloadedProjects + " projects");
 	}
 	
 
@@ -169,6 +177,13 @@ public class DatasetCrawl2 implements Runnable {
 		Progress.updateProgress(percentCompletion);
 		Thread.currentThread().interrupt();
 		
+	}
+
+
+	public static void setDatabase(String hostname, String dbName) {
+		host = hostname;
+		databaseName = dbName;
+		DBManager = new AnalysisDBManager(host,databaseName);
 	}
 
 	

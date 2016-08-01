@@ -67,6 +67,16 @@ public class TestCrawler {
 		assertNotNull(src);
 	}
 
+	
+
+	@Test
+	public void testProjectListingCrawl() {
+		Crawler crawler = new Crawler();
+		crawler.setNumberOfProjectToCollect(200);
+		List<ProjectMetadata> projectMetadataListing = crawler.getProjectsFromQuery();
+		assertEquals(200, projectMetadataListing.size());
+	}
+	
 	@Test
 	public void testGetOriginalProject() throws Exception {
 		int remixProjectID = 100189358;
@@ -81,12 +91,5 @@ public class TestCrawler {
 
 	}
 
-	@Test
-	public void testProjectListingCrawl() {
-		Crawler crawler = new Crawler();
-		crawler.setNumberOfProjectToCollect(200);
-		List<ProjectMetadata> projectMetadataListing = crawler.getProjectsFromQuery();
-		assertEquals(200, projectMetadataListing.size());
-	}
 
 }
