@@ -21,14 +21,14 @@ import vt.cs.smells.datamanager.worker.AnalysisDBManager;
 import vt.cs.smells.datamanager.worker.Progress;
 
 public class DatasetCrawl2 implements Runnable {
-	
-	private static int numOfProjects=500;
+
+	private static int numOfProjects = 500;
 	public static String configurationFilePath = "";
 	private static String databaseName = "test";
 	private static AnalysisDBManager DBManager;
 	static Logger logger = Logger.getLogger(DatasetCrawl2.class);
 	private static double percentCompletion = 0;
-	private static String host="localhost";
+	private static String host = "localhost";
 	private static int downloadedProjects = 0;
 	private static long elapsedTime;
 	private static int failureCounter = 0;
@@ -36,100 +36,120 @@ public class DatasetCrawl2 implements Runnable {
 	private static long startTime;
 	private static long endTime;
 
-	public static void main(String[] args){
+	public static void main(String[] args) {
 		// config log4j
-		//set log directory
+		// set log directory
 		Properties props = System.getProperties();
-		if(props.getProperty("logDir")!=null){
+		if (props.getProperty("logDir") != null) {
 			props.setProperty("logDir", "./");
 		}
-		PropertyConfigurator.configure(DatasetCrawl2.class.getClassLoader().getResource("log4j.xml"));
-		
+		PropertyConfigurator.configure(DatasetCrawl2.class.getClassLoader()
+				.getResource("log4j.xml"));
+
 		final Options options = createOptions();
-		
+
 		Thread srcRetrievalStatusThread = new Thread(new DatasetCrawl2());
-		
+
 		try {
 			final CommandLine line = getCommandLine(options, args);
-			try{
+			try {
 				numOfProjects = Integer.parseInt(line.getOptionValue("n"));
 				databaseName = line.getOptionValue("db");
 				host = line.getOptionValue("h");
-			}catch(Exception e){
-				
+			} catch (Exception e) {
+
 			}
-			
+
 			Crawler crawler = new Crawler();
 			crawler.setNumberOfProjectToCollect(numOfProjects);
-			
+
 			setDatabase(host, databaseName);
-			
-			
-//			DBManager.setDBName(databaseName);
+
+			// DBManager.setDBName(databaseName);
 			logger.info("Running Project Listing Retrieval");
-			logger.info("Number of Projects to Collect: "+numOfProjects);
-			
-			List<ProjectMetadata> projectMetadataListing = crawler.getProjectsFromQuery();
+			logger.info("Number of Projects to Collect: " + numOfProjects);
+
+			List<ProjectMetadata> projectMetadataListing = crawler
+					.getProjectsFromQuery();
 			System.out.println(projectMetadataListing.size());
 			JSONParser parser = new JSONParser();
-			
+
 			srcRetrievalStatusThread.start();
 			startTime = System.nanoTime();
 			retrieveProjectMetadataListing(crawler, projectMetadataListing,
 					parser);
 			endTime = System.nanoTime();
-			elapsedTime = endTime-startTime;
-			
-			
+			elapsedTime = endTime - startTime;
+
 			srcRetrievalStatusThread.interrupt();
-			
+
 			StringBuilder sb = new StringBuilder();
 			sb.append("Complete\n");
-			sb.append("Projects Downloaded: "+downloadedProjects+ "/" + numOfProjects +"\n");
-			sb.append("New projects : "+newProjectCounter +"\n");
-			sb.append("Projects already in database : "+ (downloadedProjects-newProjectCounter)+ "\n");
-			sb.append("Projects failed to download : "+ failureCounter +"\n");
-			sb.append("Time elapsed: "+getElapsedTimeHoursMinutesFromMilliseconds(elapsedTime) +"\n");
+			sb.append("Projects Downloaded: " + downloadedProjects + "/"
+					+ numOfProjects + "\n");
+			sb.append("New projects : " + newProjectCounter + "\n");
+			sb.append("Projects already in database : "
+					+ (downloadedProjects - newProjectCounter) + "\n");
+			sb.append("Projects failed to download : " + failureCounter + "\n");
+			sb.append("Time elapsed: "
+					+ getElapsedTimeHoursMinutesFromMilliseconds(elapsedTime)
+					+ "\n");
 			logger.info(sb.toString());
 
 		} catch (Exception e1) {
 			e1.printStackTrace();
 			srcRetrievalStatusThread.interrupt();
-			
+
 		}
 	}
 
-
 	public static void retrieveProjectMetadataListing(Crawler crawler,
 			List<ProjectMetadata> projectMetadataListing, JSONParser parser) {
+		
 		for (int i = 0; i < projectMetadataListing.size(); i++) {
 			ProjectMetadata current = projectMetadataListing.get(i);
-			if(DBManager.findMetadata(current.getProjectID()) != null){
+			if (DBManager.findMetadata(current.getProjectID()) != null) {
 				downloadedProjects++;
+				System.out.print("\r");
+				System.out.print(current.getProjectID());
+				System.out
+						.print("\t..."
+								+ (double) (downloadedProjects / (double) projectMetadataListing
+										.size()) * 100);
+				// System.out.println((double)4/(double)5);
 				continue;
 			}
 			try {
 				current = crawler.retrieveProjectMetadata(current);
-				if(current!=null){
+				if (current != null) {
 					String src = crawler
 							.retrieveProjectSourceFromProjectID(current
 									.getProjectID());
-					String singleLineJSONSrc = ((JSONObject) parser
-							.parse(src)).toJSONString();
+					String singleLineJSONSrc = ((JSONObject) parser.parse(src))
+							.toJSONString();
 					DBManager.putSource(current.getProjectID(),
 							singleLineJSONSrc);
 					DBManager.putMetadata(current.toDocument());
+					System.out.print("\r");
+					System.out.print("Retrieving..." + current.getProjectID());
 					downloadedProjects++;
-					newProjectCounter ++;
+					newProjectCounter++;
+					System.out
+							.print("\t..."
+									+ (double) (downloadedProjects + 0.0001 / projectMetadataListing
+											.size()) * 100);
+					System.out.println((double) 4 / (double) 5);
 				}
 			} catch (Exception e) {
-				failureCounter ++;
-				logger.error("ID:"+ current.getProjectID()+" - "+e);
+				failureCounter++;
+				logger.error("ID:" + current.getProjectID() + " - " + e);
 			}
 		}
+		System.out.println("\nNew projects retrieved: " + newProjectCounter);
 		System.out.println("Retrieved:" + downloadedProjects + " projects");
+		System.out
+				.println("Failed to download:" + failureCounter + " projects");
 	}
-	
 
 	private static CommandLine getCommandLine(Options options, String[] args)
 			throws Exception {
@@ -145,26 +165,26 @@ public class DatasetCrawl2 implements Runnable {
 		options.addOption("db", true, "database name");
 		options.addOption("h", true, "host for mongod instance");
 		options.addOption("l", true, "log file directory");
-		
 
 		return options;
 	}
-	
+
 	public static String getElapsedTimeHoursMinutesFromMilliseconds(long l) {
 		final long hr = TimeUnit.NANOSECONDS.toHours(l);
-        final long min = TimeUnit.NANOSECONDS.toMinutes(l - TimeUnit.HOURS.toMillis(hr));
-        final long sec = TimeUnit.NANOSECONDS.toSeconds(l - TimeUnit.HOURS.toMillis(hr) - TimeUnit.MINUTES.toMillis(min));
-        
-        return String.format("%02d hr:%02d min:%02d sec", hr, min, sec);
-    }
+		final long min = TimeUnit.NANOSECONDS.toMinutes(l
+				- TimeUnit.HOURS.toMillis(hr));
+		final long sec = TimeUnit.NANOSECONDS.toSeconds(l
+				- TimeUnit.HOURS.toMillis(hr) - TimeUnit.MINUTES.toMillis(min));
 
+		return String.format("%02d hr:%02d min:%02d sec", hr, min, sec);
+	}
 
 	@Override
 	public void run() {
 		logger.info("#################################");
 		logger.info("Running Project Source Retrieval");
-		while(percentCompletion < 100){
-			percentCompletion = ((double)downloadedProjects/(double)(numOfProjects-failureCounter))*100;
+		while (percentCompletion < 100) {
+			percentCompletion = ((double) downloadedProjects / (double) (numOfProjects - failureCounter)) * 100;
 			try {
 				Progress.updateProgress(percentCompletion);
 				Thread.sleep(2000);
@@ -172,20 +192,17 @@ public class DatasetCrawl2 implements Runnable {
 				break;
 			}
 		}
-		
-		percentCompletion = ((double)downloadedProjects/(double)(numOfProjects-failureCounter))*100;
+
+		percentCompletion = ((double) downloadedProjects / (double) (numOfProjects - failureCounter)) * 100;
 		Progress.updateProgress(percentCompletion);
 		Thread.currentThread().interrupt();
-		
-	}
 
+	}
 
 	public static void setDatabase(String hostname, String dbName) {
 		host = hostname;
 		databaseName = dbName;
-		DBManager = new AnalysisDBManager(host,databaseName);
+		DBManager = new AnalysisDBManager(host, databaseName);
 	}
 
-	
-	
 }

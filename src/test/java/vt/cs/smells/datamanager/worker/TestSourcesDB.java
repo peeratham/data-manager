@@ -38,6 +38,7 @@ public class TestSourcesDB {
 		int projectID = 43026762;
 		String src = crawler.retrieveProjectSourceFromProjectID(projectID);
 		String singleLineJSONSrc = ((JSONObject) parser.parse(src)).toJSONString();
+		manager.clearSources();
 		manager.putSource(projectID, singleLineJSONSrc);
 		assertEquals(1, manager.getSourcesSize());
 		manager.putSource(projectID, singleLineJSONSrc);
